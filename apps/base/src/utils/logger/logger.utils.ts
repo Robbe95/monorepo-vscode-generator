@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { useLogger } from 'reactive-vscode'
 
-import { displayName } from '#generated/meta.ts'
 import { getInputType } from '#utils/input/inputType.utils.ts'
 
 export function getLogger() {
@@ -15,7 +14,7 @@ export function getLogger() {
     }
   }
   else if (inputType === 'vscode') {
-    return useLogger(displayName)
+    return useLogger('monorepo-code-generator')
   }
   throw new Error('Invalid input type. Must be "cli" or "vscode".')
 }

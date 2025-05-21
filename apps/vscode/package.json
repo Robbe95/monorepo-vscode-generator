@@ -62,6 +62,7 @@
   },
   "devDependencies": {
     "@antfu/ni": "catalog:monorepo",
+    "@repo/base": "workspace:*",
     "@types/node": "catalog:type",
     "@types/vscode": "catalog:type",
     "@vscode/vsce": "catalog:vscode",
@@ -69,7 +70,6 @@
     "bumpp": "catalog:base",
     "eslint": "catalog:lint",
     "esno": "catalog:base",
-    "@repo/base": "workspace:*",
     "pnpm": "catalog:monorepo",
     "reactive-vscode": "catalog:vscode",
     "tsdown": "catalog:base",

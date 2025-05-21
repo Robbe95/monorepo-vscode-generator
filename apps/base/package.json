@@ -1,13 +1,10 @@
 {
+  "publisher": "robbe95",
   "name": "@repo/base",
+  "displayName": "monorepo-code-generator",
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "exports": {
-    ".": "./index.ts"
-  },
-  "publisher": "robbe95",
-  "displayName": "monorepo-code-generator",
   "packageManager": "pnpm@10.11.0",
   "description": "",
   "author": {
@@ -22,6 +19,9 @@
   "categories": [
     "Other"
   ],
+  "exports": {
+    ".": "./index.ts"
+  },
   "imports": {
     "#*": "./src/*"
   },
@@ -50,14 +50,14 @@
     "bumpp": "catalog:base",
     "eslint": "catalog:lint",
     "esno": "catalog:base",
+    "pluralize": "catalog:base",
     "pnpm": "catalog:monorepo",
     "reactive-vscode": "catalog:vscode",
+    "ts-morph": "catalog:base",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
     "vite": "catalog:base",
     "vitest": "catalog:base",
-    "pluralize": "catalog:base",
-    "ts-morph": "catalog:base",
     "vscode-ext-gen": "catalog:vscode"
   }
 }
