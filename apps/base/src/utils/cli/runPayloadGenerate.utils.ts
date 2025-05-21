@@ -1,13 +1,14 @@
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 
-import * as vscode from 'vscode' // Import vscode module
+import * as vscode from 'vscode'
 
-import { logger } from '#utils.ts'
+import { getLogger } from '#utils/logger/logger.utils.ts'
 
 const execPromise = promisify(exec)
 
 export function runPayloadGenerate() {
+  const logger = getLogger()
   const editor = vscode.window.activeTextEditor
 
   if (!editor) {

@@ -1,4 +1,3 @@
-import { window } from 'vscode'
 
 import { createNewEntityCollection } from '#commands/create-new-entity/createNewEntityCollection.ts'
 import { createNewEntityContract } from '#commands/create-new-entity/createNewEntityContract.ts'
@@ -7,13 +6,15 @@ import { createNewEntityPayloadModule } from '#commands/create-new-entity/create
 import { runEslintFix } from '#utils/cli/runEslintFix.utils.ts'
 import { runPayloadGenerate } from '#utils/cli/runPayloadGenerate.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
-import { getInputString } from '#utils/getInputString.utils.ts'
+import { getInputString } from '#utils/input/getInputString.utils.ts'
+import { getLogger } from '#utils/logger/logger.utils.ts'
 
 import { getNuxtLayer } from './createNewEntityGetNuxtLayer'
 import { createNewEntityNuxtApi } from './createNewEntityNuxtApi'
 
 export async function createNewEntityCommand() {
   const rootWorkspacePath = getRootFolder()
+  const logger = getLogger()
 
   const entityName = await getInputString({
     title: 'Create New Entity',
@@ -21,7 +22,7 @@ export async function createNewEntityCommand() {
   })
 
   if (!rootWorkspacePath) {
-    window.showErrorMessage('No workspace folder found')
+    logger.error('No workspace folder found')
 
     return
   }
@@ -32,7 +33,7 @@ export async function createNewEntityCommand() {
   // We ask the nuxt layer so we know where to create the calls for the new entity
   const layerName = await getNuxtLayer()
 
-  window.showInformationMessage(`Module ${payloadModuleName} selected`)
+  logger.info(`Module ${payloadModuleName} selected`)
 
   createNewEntityCollection(entityName)
   createNewEntityModel(entityName)
@@ -46,5 +47,5 @@ export async function createNewEntityCommand() {
   await runPayloadGenerate()
   await runEslintFix()
 
-  window.showInformationMessage(`Entity ${entityName} created successfully`)
+  logger.info(`Entity ${entityName} created successfully`)
 }

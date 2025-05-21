@@ -1,85 +1,32 @@
 {
-  "publisher": "robbe95",
   "name": "monorepo-code-generator",
-  "displayName": "monorepo-code-generator",
-  "version": "0.0.1",
-  "private": false,
-  "packageManager": "pnpm@10.11.0",
-  "description": "",
-  "author": {
-    "name": "Robbe Vaes",
-    "email": "robbevaes95@gmail.com"
-  },
+  "type": "module",
+  "packageManager": "pnpm@10.8.1",
+  "version": "0.0.0",
   "license": "MIT",
-  "categories": [
-    "Other"
+  "workspaces": [
+    "apps/*"
   ],
-  "imports": {
-    "#*": "./src/*"
-  },
-  "main": "./dist/index.js",
-  "icon": "res/icon.png",
-  "files": [
-    "LICENSE.md",
-    "dist/*",
-    "res/*"
-  ],
-  "engines": {
-    "vscode": "^1.97.0"
-  },
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "monorepoCodeGenerator.createEntity",
-        "title": "Create new entity"
-      }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "monorepo-code-generator",
-      "properties": {}
-    }
-  },
   "scripts": {
-    "build": "tsdown src/index.ts --external vscode",
-    "dev": "pnpm build --watch --sourcemap",
-    "meta": "vscode-ext-gen --output src/generated/meta.ts",
-    "lint": "eslint .",
-    "vscode:prepublish": "pnpm build",
-    "publish": "vsce publish --no-dependencies",
-    "pack": "vsce package --no-dependencies",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "release": "bumpp && pnpm publish"
+    "dev": "turbo run dev",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "clean": "pnpm -r clean",
+    "build": "pnpm -r build",
+    "typecheck": "turbo typecheck",
+    "test": "vitest --run",
+    "precommit": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
-    "pluralize": "^8.0.0",
-    "ts-morph": "^26.0.0"
+    "turbo": "catalog:monorepo"
   },
   "devDependencies": {
-    "@antfu/ni": "^23.3.1",
-    "@types/node": "^22.15.19",
-    "@types/pluralize": "^0.0.33",
-    "@types/vscode": "^1.97.0",
-    "@vscode/vsce": "^3.4.1",
-    "@wisemen/eslint-config-vue": "^1.2.0",
-    "bumpp": "^10.1.1",
-    "eslint": "^9.27.0",
-    "esno": "^4.8.0",
-    "pnpm": "^10.11.0",
-    "reactive-vscode": "^0.2.17",
-    "tsdown": "^0.11.12",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "^3.1.4",
-    "vscode-ext-gen": "^1.0.2"
+    "vitest": "catalog:base"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
     ]
   }
+
 }

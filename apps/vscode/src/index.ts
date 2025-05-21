@@ -3,11 +3,13 @@ import {
   useCommands,
 } from 'reactive-vscode'
 
-import { createNewEntityCommand } from '#commands/create-new-entity/createNewEntity.command.ts'
+import { createNewEntityCommand, setInputType } from '@repo/base'
 
 const {
   activate, deactivate,
 } = defineExtension(() => {
+  
+  setInputType('vscode')
   useCommands({
     'monorepoCodeGenerator.createEntity': createNewEntityCommand,
   })

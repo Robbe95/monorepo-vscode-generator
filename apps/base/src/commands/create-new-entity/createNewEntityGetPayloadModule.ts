@@ -3,7 +3,7 @@ import { window } from 'vscode'
 import { PAYLOAD_PATH } from '#constants/paths.constants.ts'
 import { getFolders } from '#utils/folders/getFolders.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
-import { getInputString } from '#utils/getInputString.utils.ts'
+import { getInputString } from '#utils/input/getInputString.utils.ts'
 
 export async function getPayloadModule(entityName: string): Promise<string> {
   const rootWorkspacePath = getRootFolder()

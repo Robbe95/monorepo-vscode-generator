@@ -4,7 +4,7 @@ import {
 } from 'ts-morph'
 
 import { PAYLOAD_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/entityCasing.utils.ts'
+import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'

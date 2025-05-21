@@ -1,12 +1,4 @@
-export interface EntityCasing {
-  toCamelCase: (str: string) => string
-  toKebabCase: (str: string) => string
-  toPascalCase: (str: string) => string
-  toSnakeCase: (str: string) => string
-  toUpperCase: (str: string) => string
-}
-
-export const CaseTransformer: EntityCasing = {
+export const CaseTransformer = {
   toCamelCase: (str: string) => {
     return str
       .replace(/^\w|[A-Z]|\b\w|\s+/g, (match, index) => {
