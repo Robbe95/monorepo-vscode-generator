@@ -1,11 +1,15 @@
 {
-  "publisher": "robbe",
+  "publisher": "robbe95",
   "name": "monorepo-code-generator",
   "displayName": "monorepo-code-generator",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
+  "private": false,
   "packageManager": "pnpm@10.11.0",
   "description": "",
+  "author": {
+    "name": "Robbe Vaes",
+    "email": "robbevaes95@gmail.com"
+  },
   "license": "MIT",
   "categories": [
     "Other"
