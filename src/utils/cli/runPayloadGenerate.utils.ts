@@ -3,7 +3,7 @@ import { promisify } from 'node:util'
 
 import * as vscode from 'vscode' // Import vscode module
 
-import { logMessage } from '#logger/logger.ts'
+import { logger } from '#utils.ts'
 
 const execPromise = promisify(exec)
 
@@ -40,7 +40,7 @@ export function runPayloadGenerate() {
       vscode.window.showInformationMessage('Generate types completed successfully!')
     }
     catch (error: any) {
-      logMessage(error.message)
+      logger.error(error.message)
       console.error('Error running generate types fix:', error)
       vscode.window.showErrorMessage(`Error running generate types fix: ${error.message || error}`)
     }

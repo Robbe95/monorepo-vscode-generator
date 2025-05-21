@@ -1,7 +1,7 @@
 {
   "publisher": "robbe",
-  "name": "generator-extension",
-  "displayName": "generator-extension",
+  "name": "monorepo-code-generator",
+  "displayName": "monorepo-code-generator",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
@@ -29,13 +29,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "generator.createEntity",
+        "command": "monorepoCodeGenerator.createEntity",
         "title": "Create new entity"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "ext-name",
+      "title": "monorepo-code-generator",
       "properties": {}
     }
   },
