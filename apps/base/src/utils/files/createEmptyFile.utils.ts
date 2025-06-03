@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import { getTsProject } from '#utils/ts-morph/getTsProject.utils.ts'
 
-export function createEmptyFile({
+export async function createEmptyFile({
   name,
   projectPath,
   path,
@@ -13,7 +13,7 @@ export function createEmptyFile({
 }) {
   const filePath = `${path}/${name}`
 
-  const project = getTsProject(projectPath)
+  const project = await getTsProject(projectPath)
 
   fs.mkdirSync(path, {
     recursive: true,

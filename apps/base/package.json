@@ -30,34 +30,25 @@
     "dev": "pnpm build --watch --sourcemap",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
-    "vscode:prepublish": "pnpm build",
-    "vscode:publish": "vsce publish --no-dependencies",
-    "vscode:pack": "vsce package --no-dependencies",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "release": "bumpp && pnpm publish"
   },
   "dependencies": {
-    "@clack/prompts": "catalog:base"
-  },
-  "devDependencies": {
     "@antfu/ni": "catalog:monorepo",
     "@types/node": "catalog:type",
     "@types/pluralize": "catalog:type",
-    "@types/vscode": "catalog:type",
-    "@vscode/vsce": "catalog:vscode",
     "@wisemen/eslint-config-vue": "catalog:lint",
     "bumpp": "catalog:base",
     "eslint": "catalog:lint",
     "esno": "catalog:base",
     "pluralize": "catalog:base",
     "pnpm": "catalog:monorepo",
-    "reactive-vscode": "catalog:vscode",
     "ts-morph": "catalog:base",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
     "vite": "catalog:base",
-    "vitest": "catalog:base",
-    "vscode-ext-gen": "catalog:vscode"
+    "vitest": "catalog:base"
+
   }
 }

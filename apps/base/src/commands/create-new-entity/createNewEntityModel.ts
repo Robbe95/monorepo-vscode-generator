@@ -30,27 +30,27 @@ export function getModelDetailName(entityName: string) {
   return `client${CaseTransformer.toPascalCase(entityName)}Detail`
 }
 
-function getModelFullModelFolderPath(entityName: string) {
-  return `${getRootFolder()}/${MODELS_PATH}/src/${getModelFolderPath(entityName)}`
+async function getModelFullModelFolderPath(entityName: string) {
+  return `${await getRootFolder()}/${MODELS_PATH}/src/${getModelFolderPath(entityName)}`
 }
 
-export function createNewEntityModel(entityName: string) {
-  createModelFile(entityName)
-  createModelTransformerFile(entityName)
-  createModelIndexFile(entityName)
-  addToModelIndexFile(entityName)
+export async function createNewEntityModel(entityName: string) {
+  await createModelFile(entityName)
+  await createModelTransformerFile(entityName)
+  await createModelIndexFile(entityName)
+  await addToModelIndexFile(entityName)
 }
 
-export function createModelFile(entityName: string) {
-  const modelFolderPath = getModelFullModelFolderPath(entityName)
+export async function createModelFile(entityName: string) {
+  const modelFolderPath = await getModelFullModelFolderPath(entityName)
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getModelFileName(entityName),
     projectPath: MODELS_PATH,
     path: `${modelFolderPath}`,
   })
 
-  const modelSourceFile = getTsSourceFile({
+  const modelSourceFile = await getTsSourceFile({
     filePath: `src/${getModelFolderPath(entityName)}/${getModelFileName(entityName)}`,
     projectPath: MODELS_PATH,
   })
@@ -128,16 +128,16 @@ export function createModelFile(entityName: string) {
   modelSourceFile.saveSync()
 }
 
-export function createModelTransformerFile(entityName: string) {
-  const modelFolderPath = getModelFullModelFolderPath(entityName)
+export async function createModelTransformerFile(entityName: string) {
+  const modelFolderPath = await getModelFullModelFolderPath(entityName)
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getModelTransformerFileName(entityName),
     projectPath: MODELS_PATH,
     path: `${modelFolderPath}`,
   })
 
-  const modelTransformerSourceFile = getTsSourceFile({
+  const modelTransformerSourceFile = await getTsSourceFile({
     filePath: `src/${getModelFolderPath(entityName)}/${getModelTransformerFileName(entityName)}`,
     projectPath: MODELS_PATH,
   })
@@ -204,16 +204,16 @@ export function createModelTransformerFile(entityName: string) {
   modelTransformerSourceFile.saveSync()
 }
 
-export function createModelIndexFile(entityName: string) {
-  const modelFolderPath = getModelFullModelFolderPath(entityName)
+export async function createModelIndexFile(entityName: string) {
+  const modelFolderPath = await getModelFullModelFolderPath(entityName)
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getModelIndexFileName(entityName),
     projectPath: MODELS_PATH,
     path: `${modelFolderPath}`,
   })
 
-  const modelIndexSourceFile = getTsSourceFile({
+  const modelIndexSourceFile = await getTsSourceFile({
     filePath: `src/${getModelFolderPath(entityName)}/${getModelIndexFileName(entityName)}`,
     projectPath: MODELS_PATH,
   })
@@ -229,8 +229,8 @@ export function createModelIndexFile(entityName: string) {
   modelIndexSourceFile.saveSync()
 }
 
-export function addToModelIndexFile(entityName: string) {
-  const globalModalIndexSourceFile = getTsSourceFile({
+export async function addToModelIndexFile(entityName: string) {
+  const globalModalIndexSourceFile = await getTsSourceFile({
     filePath: `src/index.ts`,
     projectPath: MODELS_PATH,
   })

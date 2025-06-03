@@ -32,33 +32,33 @@ function getModuleFolderPath(entityName: string) {
   return `src/modules/${CaseTransformer.toKebabCase(entityName)}`
 }
 
-function getModuleFolderFullPath(entityName: string) {
-  return `${getRootFolder()}/${PAYLOAD_PATH}/${getModuleFolderPath(entityName)}`
+async function getModuleFolderFullPath(entityName: string) {
+  return `${await getRootFolder()}/${PAYLOAD_PATH}/${getModuleFolderPath(entityName)}`
 }
 
-export function createNewEntityPayloadModule(entityName: string) {
-  createFolder(getModuleFolderFullPath(entityName))
+export async function createNewEntityPayloadModule(entityName: string) {
+  createFolder(await getModuleFolderFullPath(entityName))
 
-  createRouterFile(entityName)
-  createIndexQueryFile(entityName)
-  createDetailQueryFile(entityName)
-  addToOrpcRouterFile(entityName)
+  await createRouterFile(entityName)
+  await createIndexQueryFile(entityName)
+  await createDetailQueryFile(entityName)
+  await addToOrpcRouterFile(entityName)
 }
 
-function getPayloadModulePath(entityName: string) {
-  return `${getRootFolder()}/${PAYLOAD_PATH}/${getModuleFolderPath(entityName)}`
+async function getPayloadModulePath(entityName: string) {
+  return `${await getRootFolder()}/${PAYLOAD_PATH}/${getModuleFolderPath(entityName)}`
 }
 
-function createRouterFile(entityName: string) {
-  const payloadModulePath = `${getModuleFolderFullPath(entityName)}`
+async function createRouterFile(entityName: string) {
+  const payloadModulePath = `${await getModuleFolderFullPath(entityName)}`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getRouterFileName(entityName),
     projectPath: PAYLOAD_PATH,
     path: `${payloadModulePath}`,
   })
 
-  const routerSourceFile = getTsSourceFile({
+  const routerSourceFile = await getTsSourceFile({
     filePath: `${getModuleFolderPath(entityName)}/${getRouterFileName(entityName)}`,
     projectPath: PAYLOAD_PATH,
   })
@@ -103,16 +103,16 @@ function createRouterFile(entityName: string) {
   routerSourceFile.saveSync()
 }
 
-function createIndexQueryFile(entityName: string) {
-  const queryPath = `${getPayloadModulePath(entityName)}/query`
+async function createIndexQueryFile(entityName: string) {
+  const queryPath = `${await getPayloadModulePath(entityName)}/query`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getIndexQueryFileName(entityName),
     projectPath: PAYLOAD_PATH,
     path: `${queryPath}`,
   })
 
-  const indexQuerySourceFile = getTsSourceFile({
+  const indexQuerySourceFile = await getTsSourceFile({
     filePath: `${getModuleFolderPath(entityName)}/query/${getIndexQueryFileName(entityName)}`,
     projectPath: PAYLOAD_PATH,
   })
@@ -187,16 +187,16 @@ function createIndexQueryFile(entityName: string) {
   indexQuerySourceFile.saveSync()
 }
 
-function createDetailQueryFile(entityName: string) {
-  const queryPath = `${getPayloadModulePath(entityName)}/query`
+async function createDetailQueryFile(entityName: string) {
+  const queryPath = `${await getPayloadModulePath(entityName)}/query`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getDetailQueryFileName(entityName),
     projectPath: PAYLOAD_PATH,
     path: `${queryPath}`,
   })
 
-  const indexQuerySourceFile = getTsSourceFile({
+  const indexQuerySourceFile = await getTsSourceFile({
     filePath: `${getModuleFolderPath(entityName)}/query/${getDetailQueryFileName(entityName)}`,
     projectPath: PAYLOAD_PATH,
   })
@@ -267,8 +267,8 @@ function createDetailQueryFile(entityName: string) {
   indexQuerySourceFile.saveSync()
 }
 
-function addToOrpcRouterFile(entityName: string) {
-  const orpcRouterSourceFile = getTsSourceFile({
+async function addToOrpcRouterFile(entityName: string) {
+  const orpcRouterSourceFile = await getTsSourceFile({
     filePath: `src/orpc/router/orpc.router.ts`,
     projectPath: PAYLOAD_PATH,
   })

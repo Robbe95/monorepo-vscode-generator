@@ -26,14 +26,14 @@ function getCollectionFileName(entityName: string) {
   return `${entityName}.collection.ts`
 }
 
-export function createNewEntityCollection(entityName: string) {
-  createCollectionFile(entityName)
-  createCollectionsFile(entityName)
-  addCollectionToIndexFile(entityName)
+export async function createNewEntityCollection(entityName: string) {
+  await createCollectionFile(entityName)
+  await createCollectionsFile(entityName)
+  await addCollectionToIndexFile(entityName)
 }
 
-export function createCollectionFile(entityName: string) {
-  const collectionFolderPath = `${getRootFolder()}/${getCollectionFolderPath(entityName)}`
+export async function createCollectionFile(entityName: string) {
+  const collectionFolderPath = `${await getRootFolder()}/${getCollectionFolderPath(entityName)}`
 
   createEmptyFile({
     name: getCollectionFileName(entityName),
@@ -41,7 +41,7 @@ export function createCollectionFile(entityName: string) {
     path: collectionFolderPath,
   })
 
-  const collectionSourceFile = getTsSourceFile({
+  const collectionSourceFile = await getTsSourceFile({
     filePath: `${getCollectionFolderPath(entityName)}/${getCollectionFileName(entityName)}`,
     projectPath: PAYLOAD_PATH,
   })
@@ -106,8 +106,8 @@ export function createCollectionFile(entityName: string) {
   collectionSourceFile.saveSync()
 }
 
-export function createCollectionsFile(entityName: string) {
-  const collectionPath = `${getRootFolder()}/${getCollectionsFolderPath(entityName)}`
+export async function createCollectionsFile(entityName: string) {
+  const collectionPath = `${await getRootFolder()}/${getCollectionsFolderPath(entityName)}`
 
   createEmptyFile({
     name: getCollectionsFileName(entityName),
@@ -115,7 +115,7 @@ export function createCollectionsFile(entityName: string) {
     path: collectionPath,
   })
 
-  const collectionsSourceFile = getTsSourceFile({
+  const collectionsSourceFile = await getTsSourceFile({
     filePath: `${getCollectionsFolderPath(entityName)}/${getCollectionsFileName(entityName)}`,
     projectPath: PAYLOAD_PATH,
   })
@@ -149,8 +149,8 @@ export function createCollectionsFile(entityName: string) {
   collectionsSourceFile.saveSync()
 }
 
-export function addCollectionToIndexFile(entityName: string) {
-  const collectionsSourceFile = getTsSourceFile({
+export async function addCollectionToIndexFile(entityName: string) {
+  const collectionsSourceFile = await getTsSourceFile({
     filePath: `src/collections/collections.ts`,
     projectPath: PAYLOAD_PATH,
   })

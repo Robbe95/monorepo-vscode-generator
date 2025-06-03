@@ -4,7 +4,7 @@ import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
 import { getInputSelect } from '#utils/input/getInputSelect.utils.ts'
 
 export async function getNuxtLayer(): Promise<string> {
-  const rootWorkspacePath = getRootFolder()
+  const rootWorkspacePath = await getRootFolder()
   const folders = await getFolders(`${rootWorkspacePath}/${NUXT_PATH}/layers`)
   const layerOptions = folders.map((folder) => ({
     description: folder.path,

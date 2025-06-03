@@ -1,4 +1,3 @@
-
 import { createNewEntityCollection } from '#commands/create-new-entity/createNewEntityCollection.ts'
 import { createNewEntityContract } from '#commands/create-new-entity/createNewEntityContract.ts'
 import { createNewEntityModel } from '#commands/create-new-entity/createNewEntityModel.ts'
@@ -13,8 +12,8 @@ import { getNuxtLayer } from './createNewEntityGetNuxtLayer'
 import { createNewEntityNuxtApi } from './createNewEntityNuxtApi'
 
 export async function createNewEntityCommand() {
-  const rootWorkspacePath = getRootFolder()
-  const logger = getLogger()
+  const rootWorkspacePath = await getRootFolder()
+  const logger = await getLogger()
 
   const entityName = await getInputString({
     title: 'Create New Entity',

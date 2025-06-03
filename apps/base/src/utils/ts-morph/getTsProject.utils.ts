@@ -4,8 +4,8 @@ import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
 
 const mapOfProjectPaths = new Map<string, Project>()
 
-export function getTsProject(path: string): Project {
-  const workspaceRoot = getRootFolder()
+export async function getTsProject(path: string): Promise<Project> {
+  const workspaceRoot = await getRootFolder()
 
   if (mapOfProjectPaths.has(path)) {
     return mapOfProjectPaths.get(path) as Project

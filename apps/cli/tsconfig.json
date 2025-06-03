@@ -8,8 +8,8 @@
       "esnext"
     ],
     "baseUrl": ".",
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext", // Or "ES2022", "ESNext"
+    "moduleResolution": "NodeNext", // Crucial for how Node resolves modules
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "allowJs": true,

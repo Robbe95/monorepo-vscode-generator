@@ -30,43 +30,43 @@ function getLayerApiFolderPath({
   return `layers/${CaseTransformer.toKebabCase(layerName)}/api/${CaseTransformer.toKebabCase(entityName)}`
 }
 
-function getLayerApiFullPath({
+async function getLayerApiFullPath({
   entityName, layerName,
 }: CreateNewEntityNuxtApiInput) {
-  return `${getRootFolder()}/${NUXT_PATH}/${getLayerApiFolderPath({
+  return `${await getRootFolder()}/${NUXT_PATH}/${getLayerApiFolderPath({
     entityName,
     layerName,
   })}`
 }
 
-export function createNewEntityNuxtApi({
+export async function createNewEntityNuxtApi({
   entityName, layerName,
 }: CreateNewEntityNuxtApiInput) {
-  createIndexQueryFile({
+  await createIndexQueryFile({
     entityName,
     layerName,
   })
-  createDetailQueryFile({
+  await createDetailQueryFile({
     entityName,
     layerName,
   })
 }
 
-function createIndexQueryFile({
+async function createIndexQueryFile({
   entityName, layerName,
 }: CreateNewEntityNuxtApiInput) {
-  const queryPath = `${getLayerApiFullPath({
+  const queryPath = `${await getLayerApiFullPath({
     entityName,
     layerName,
   })}/query`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getIndexQueryFileName(entityName),
     projectPath: NUXT_PATH,
     path: `${queryPath}`,
   })
 
-  const indexQuerySourceFile = getTsSourceFile({
+  const indexQuerySourceFile = await getTsSourceFile({
     filePath: `${getLayerApiFolderPath({
       entityName,
       layerName,
@@ -197,21 +197,21 @@ function createIndexQueryFile({
   indexQuerySourceFile.saveSync()
 }
 
-function createDetailQueryFile({
+async function createDetailQueryFile({
   entityName, layerName,
 }: CreateNewEntityNuxtApiInput) {
-  const queryPath = `${getLayerApiFullPath({
+  const queryPath = `${await getLayerApiFullPath({
     entityName,
     layerName,
   })}/query`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getDetailQueryFileName(entityName),
     projectPath: NUXT_PATH,
     path: `${queryPath}`,
   })
 
-  const detailQuerySourceFile = getTsSourceFile({
+  const detailQuerySourceFile = await getTsSourceFile({
     filePath: `${getLayerApiFolderPath({
       entityName,
       layerName,

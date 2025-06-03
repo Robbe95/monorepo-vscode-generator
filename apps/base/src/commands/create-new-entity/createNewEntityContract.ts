@@ -31,23 +31,23 @@ export function getContractDetailName(entityName: string) {
 }
 // TODO: add post / update / delete contracts?
 
-export function createNewEntityContract(entityName: string) {
-  createContractFile(entityName)
-  addToContractIndexFile(entityName)
+export async function createNewEntityContract(entityName: string) {
+  await createContractFile(entityName)
+  await addToContractIndexFile(entityName)
 }
 
-export function createContractFile(entityName: string) {
-  const rootFolder = getRootFolder()
+export async function createContractFile(entityName: string) {
+  const rootFolder = await getRootFolder()
   const basePath = `${rootFolder}/${CONTRACT_PATH}/src`
   const contractFolderPath = `${basePath}/${getContractFolderPath(entityName)}`
 
-  createEmptyFile({
+  await createEmptyFile({
     name: getContractFileName(entityName),
     projectPath: CONTRACT_PATH,
     path: `${contractFolderPath}`,
   })
 
-  const contractSourceFile = getTsSourceFile({
+  const contractSourceFile = await getTsSourceFile({
     filePath: `src/${getContractFolderPath(entityName)}/${getContractFileName(entityName)}`,
     projectPath: CONTRACT_PATH,
   })
@@ -140,8 +140,8 @@ export function createContractFile(entityName: string) {
   contractSourceFile.saveSync()
 }
 
-export function addToContractIndexFile(entityName: string) {
-  const globalContractIndexSourceFile = getTsSourceFile({
+export async function addToContractIndexFile(entityName: string) {
+  const globalContractIndexSourceFile = await getTsSourceFile({
     filePath: `src/contract.ts`,
     projectPath: CONTRACT_PATH,
   })
