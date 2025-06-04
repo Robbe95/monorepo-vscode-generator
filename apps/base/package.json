@@ -20,14 +20,14 @@
     "Other"
   ],
   "exports": {
-    ".": "./index.ts"
+    ".": "./src/index.ts"
   },
   "imports": {
     "#*": "./src/*"
   },
   "scripts": {
-    "build": "tsdown src/index.ts --external vscode",
-    "dev": "pnpm build --watch --sourcemap",
+    "build": "tsdown src/index.ts",
+    "dev": "tsdown src/index.ts --watch",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "test": "vitest",

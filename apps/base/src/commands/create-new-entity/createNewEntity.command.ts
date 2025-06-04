@@ -13,7 +13,9 @@ import { createNewEntityNuxtApi } from './createNewEntityNuxtApi'
 
 export async function createNewEntityCommand() {
   const rootWorkspacePath = await getRootFolder()
-  const logger = await getLogger()
+  const logger = getLogger()
+
+  console.log(`Creating new entity}`)
 
   const entityName = await getInputString({
     title: 'Create New Entity',

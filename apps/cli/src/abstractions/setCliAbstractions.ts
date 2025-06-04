@@ -11,7 +11,7 @@ import {
   setGetRootFolderAbstraction,
   setLoggerExtraction,
 } from '@repo/base'
-import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils'
+import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils.ts'
 
 export function setCliAbsctractions() {
   setLoggerExtraction(cliLogger())
