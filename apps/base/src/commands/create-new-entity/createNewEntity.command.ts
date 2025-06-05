@@ -5,6 +5,7 @@ import { createNewEntityPayloadModule } from '#commands/create-new-entity/create
 import { runEslintFix } from '#utils/cli/runEslintFix.utils.ts'
 import { runPayloadGenerate } from '#utils/cli/runPayloadGenerate.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
+import { getInputSelect } from '#utils/input/getInputSelect.utils.ts'
 import { getInputString } from '#utils/input/getInputString.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
@@ -44,6 +45,7 @@ export async function createNewEntityCommand() {
     entityName,
     layerName,
   })
+
 
   await runPayloadGenerate()
   await runEslintFix()

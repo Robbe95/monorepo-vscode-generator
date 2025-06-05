@@ -38,7 +38,12 @@
       {
         "command": "monorepoCodeGenerator.createEntity",
         "title": "Create new entity"
+      },
+      {
+        "command": "monorepoCodeGenerator.createCrud",
+        "title": "Create crud"
       }
+
     ],
     "configuration": {
       "type": "object",

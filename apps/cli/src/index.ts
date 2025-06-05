@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import process from 'node:process'
 
-import { createNewEntityCommand } from '@repo/base'
 import { Command } from 'commander'
 
 import { setCliAbsctractions } from '#abstractions/setCliAbstractions.ts'
+import { createCrudCli } from '#commands/createCrud.cli.ts'
+import { createEntityCli } from '#commands/createEntity.cli.ts'
 
 process.on('SIGINT', () => process.exit(0))
 process.on('SIGTERM', () => process.exit(0))
@@ -22,7 +23,9 @@ function main() {
     )
 
   program
-    .addCommand(createNewEntityCommand)
+    .addCommand(createEntityCli)
+
+    .addCommand(createCrudCli)
 
   program.parse()
 }

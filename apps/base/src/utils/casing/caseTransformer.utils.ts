@@ -1,4 +1,8 @@
 export const CaseTransformer = {
+  /*
+   * @param {string} str - The string to convert.
+    * @returns {string} The camelCased string.
+   */
   toCamelCase: (str: string) => {
     return str
       .replace(/^\w|[A-Z]|\b\w|\s+/g, (match, index) => {
@@ -8,12 +12,20 @@ export const CaseTransformer = {
       })
       .replace(/[^a-z0-9]/gi, '')
   },
+  /*
+   * @param {string} str - The string to convert.
+   * @returns {string} The kebab-cased string.
+  */
   toKebabCase: (str: string) => {
     return str
       .replace(/([A-Z])/g, '-$1')
       .toLowerCase()
       .replace(/[^a-z0-9]/gi, '-') // Replace non-alphanumeric with dashes
   },
+  /*
+   * @param {string} str - The string to convert.
+    * @returns {string} The PascalCased string.
+   */
   toPascalCase: (str: string) => {
     return str
       .replace(/^\w|[A-Z]|\b\w|\s+/g, (match) => {
@@ -23,12 +35,20 @@ export const CaseTransformer = {
       })
       .replace(/[^a-z0-9]/gi, '')
   },
+  /*
+   * @param {string} str - The string to convert.
+   * @returns {string} The snake_cased string.
+   */
   toSnakeCase: (str: string) => {
     return str
       .replace(/([A-Z])/g, '_$1')
       .toLowerCase()
       .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscores
   },
+  /*
+   * @param {string} str - The string to convert.
+   * @returns {string} The uppercased string.
+   */
   toUpperCase: (str: string) => {
     return str
       .replace(/([A-Z])/g, '_$1')

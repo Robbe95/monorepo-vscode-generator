@@ -3,6 +3,7 @@ import process from 'node:process'
 import {
   select,
   text,
+  multiselect,
 } from '@clack/prompts'
 import type { InputSelectOptions } from '@repo/base'
 import {
@@ -47,9 +48,45 @@ async function cliGetInputString(input: InputStringOptions): Promise<string> {
   return value as string
 }
 
-async function cliGetInputSelect({
-  title, options,
-}: InputSelectOptions) {
+async function cliGetInputSelect<TMulti extends boolean>({
+  title,
+  options,
+  canSelectMultiple,
+  canTypeValue = false,
+}: InputSelectOptions<TMulti>) {
+
+  if (canSelectMultiple && canTypeValue) {
+    throw new Error('You cannot select multiple options and type a value at the same time.')
+  }
+  const typingOption = {
+    label: 'Custom value',
+    description: 'You can type a value that is not in the list', 
+  }
+  if (canTypeValue) {
+    options = [...options, typingOption]
+  }
+
+
+  const initialValues = options
+    .filter((option) => option.initialPicked)
+    
+    .map((option) => option.label)
+  if (canSelectMultiple) {
+    const selectedOptions = await multiselect({
+      message: title,
+      initialValues,
+      options: options.map((option) => ({
+        hint: option.description,
+        label: option.label,
+        value: option.label,
+      })),
+      required: true,
+    })
+
+    return selectedOptions as string[]
+  }
+
+
   const mappedOptions = options.map((option) => ({
     hint: option.description,
     label: option.label,
@@ -59,6 +96,14 @@ async function cliGetInputSelect({
     message: title,
     options: mappedOptions,
   })
+
+  if (selectedOption === 'Custom value') {
+    const customValue = await cliGetInputString({
+      title,
+      prompt: 'Please type your custom value',
+    })
+    return customValue
+  }
 
   return selectedOption as string
 }

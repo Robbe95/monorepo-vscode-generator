@@ -19,15 +19,15 @@
   "categories": [
     "Other"
   ],
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "imports": {
     "#*": "./src/*"
   },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsdown src/index.ts",
-    "dev": "tsdown src/index.ts --watch",
+    "dev": "tsdown src/index.ts",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "test": "vitest",

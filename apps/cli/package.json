@@ -28,7 +28,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsdown src/index.ts --watch",
+    "dev": "tsdown src/index.ts",
     "build": "tsdown src/index.ts",
     "start": "node dist/index.js",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",
