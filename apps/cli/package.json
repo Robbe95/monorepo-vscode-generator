@@ -3,7 +3,7 @@
   "name": "wisemen-code-generator-cli",
   "displayName": "wisemen-code-generator-cli",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "packageManager": "pnpm@10.11.0",
   "description": "",
@@ -34,7 +34,6 @@
     "lint": "eslint .",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "publish": "pnpm publish",
     "release": "bumpp && pnpm publish"
   },
   "dependencies": {
