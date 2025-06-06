@@ -2,13 +2,17 @@ import { getGetInputStringAbstraction } from '#abstractions/getInputString.abstr
 
 export interface InputStringOptions {
   title: string
+  canBeEmpty?: boolean
   prompt: string
 }
 export async function getInputString({
-  title, prompt,
+  title,
+  canBeEmpty,
+  prompt,
 }: InputStringOptions): Promise<string> {
   return await getGetInputStringAbstraction()({
     title,
+    canBeEmpty,
     prompt,
   })
 }

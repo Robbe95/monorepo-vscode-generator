@@ -3,6 +3,7 @@ import {
   VariableDeclarationKind,
 } from 'ts-morph'
 
+import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
@@ -131,8 +132,9 @@ export async function createCrudRoutes({
 async function addToRoutesIndex({
   entityName,
 }: { entityName: string }) {
+  const config = await getConfig()
   const routesSourceFile = await getTsSourceFile({
-    filePath: `./src/routes/routes.ts`,
+    filePath: config.routerFileLocation,
     projectPath: BASE_PATH,
   })
 

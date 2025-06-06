@@ -3,11 +3,10 @@ import type {
   SourceFile,
 } from 'ts-morph'
 
+import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
-
-import { getCreateCrudQueryKeysFile } from './createCrudQueryKeys.files'
 
 type KeyOption = 'index' | 'update'
 interface CreateCrudQueryKeysOptions {
@@ -18,12 +17,10 @@ interface CreateCrudQueryKeysOptions {
 export async function createCrudQueryKeys({
   entityName, keys,
 }: CreateCrudQueryKeysOptions) {
-  const {
-    name, path,
-  } = getCreateCrudQueryKeysFile()
+  const config = await getConfig()
 
   const queryKeysSourceFile = await getTsSourceFile({
-    filePath: `${path}/${name}`,
+    filePath: config.queryFileKeyLocation,
     projectPath: BASE_PATH,
   })
   const projectKeys = queryKeysSourceFile.getInterfaceOrThrow('ProjectQueryKeys')

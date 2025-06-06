@@ -1,9 +1,9 @@
 import process from 'node:process'
 
 import {
+  multiselect,
   select,
   text,
-  multiselect,
 } from '@clack/prompts'
 import type { InputSelectOptions } from '@repo/base'
 import {
@@ -34,12 +34,13 @@ function cliLogger() {
 
 async function cliGetInputString(input: InputStringOptions): Promise<string> {
   const value = await text({
+    initialValue: '',
     message: `${input.title} - ${input.prompt}`,
     validate: (value) => {
       if (typeof value !== 'string') {
         return 'Input must be a string'
       }
-      if (value.length === 0) {
+      if (value.length === 0 && !input.canBeEmpty) {
         return 'Input cannot be empty'
       }
     },
@@ -50,31 +51,34 @@ async function cliGetInputString(input: InputStringOptions): Promise<string> {
 
 async function cliGetInputSelect<TMulti extends boolean>({
   title,
-  options,
   canSelectMultiple,
   canTypeValue = false,
+  options,
 }: InputSelectOptions<TMulti>) {
-
   if (canSelectMultiple && canTypeValue) {
     throw new Error('You cannot select multiple options and type a value at the same time.')
   }
   const typingOption = {
+    description: 'You can type a value that is not in the list',
     label: 'Custom value',
-    description: 'You can type a value that is not in the list', 
-  }
-  if (canTypeValue) {
-    options = [...options, typingOption]
   }
 
+  if (canTypeValue) {
+    options = [
+      ...options,
+      typingOption,
+    ]
+  }
 
   const initialValues = options
     .filter((option) => option.initialPicked)
-    
+
     .map((option) => option.label)
+
   if (canSelectMultiple) {
     const selectedOptions = await multiselect({
-      message: title,
       initialValues,
+      message: title,
       options: options.map((option) => ({
         hint: option.description,
         label: option.label,
@@ -85,7 +89,6 @@ async function cliGetInputSelect<TMulti extends boolean>({
 
     return selectedOptions as string[]
   }
-
 
   const mappedOptions = options.map((option) => ({
     hint: option.description,
@@ -102,6 +105,7 @@ async function cliGetInputSelect<TMulti extends boolean>({
       title,
       prompt: 'Please type your custom value',
     })
+
     return customValue
   }
 

@@ -10,10 +10,11 @@ export async function getTsSourceFile({
   const project = await getTsProject(projectPath)
   const rootFolder = await getRootFolder()
   const convertedFilePath = filePath.replace(`${projectPath}/`, '')
-  const sourceFile = project.getSourceFile(`${rootFolder}/${projectPath}/${convertedFilePath}`)
+  const fullPath = `${rootFolder}/${projectPath}/${convertedFilePath}`.replaceAll('//', '/')
+  const sourceFile = project.getSourceFile(`${fullPath}`)
 
   if (!sourceFile) {
-    throw new Error(`Source file not found: ${filePath}`)
+    throw new Error(`Source file not found: ${fullPath}`)
   }
 
   return sourceFile

@@ -5,6 +5,7 @@ import {
   setGetRootFolderAbstraction,
   setLoggerExtraction,
 } from '@repo/base'
+import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils'
 import {
   useLogger,
   useWorkspaceFolders,
@@ -23,10 +24,7 @@ function vscodeLogger() {
   return useLogger('wisemen-code-generator')
 }
 
-function vscodeGetInputString(input: {
-  title: string
-  prompt: string
-}): Promise<string> {
+function vscodeGetInputString(input: InputStringOptions): Promise<string> {
   const inputBox = window.createInputBox()
 
   inputBox.title = input.title
@@ -37,7 +35,7 @@ function vscodeGetInputString(input: {
     inputBox.onDidAccept(() => {
       const value = inputBox.value
 
-      if (value) {
+      if (value || input.canBeEmpty) {
         resolve(value)
       }
       else {

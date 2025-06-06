@@ -1,4 +1,4 @@
-import { CaseTransformer } from "#utils/casing/caseTransformer.utils.ts";
+import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 
 export function getCreateCrudRoutesFile(entityName: string) {
   return {
