@@ -2,7 +2,7 @@
   "publisher": "robbe95",
   "name": "wisemen-code-generator",
   "displayName": "wisemen-code-generator",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "private": false,
   "packageManager": "pnpm@10.11.0",
   "description": "",
@@ -37,11 +37,11 @@
     "commands": [
       {
         "command": "wisemenCodeGenerator.createEntity",
-        "title": "Create new entity"
+        "title": "Wisemen codegen: Create entity"
       },
       {
         "command": "wisemenCodeGenerator.createCrud",
-        "title": "Create crud"
+        "title": "Wisemen codegen: Create CRUD"
       }
 
     ],
@@ -69,7 +69,7 @@
     "@antfu/ni": "catalog:monorepo",
     "@repo/base": "workspace:*",
     "@types/node": "catalog:type",
-    "@types/vscode": "catalog:type",
+    "@types/vscode": "1.97.0",
     "@vscode/vsce": "catalog:vscode",
     "@wisemen/eslint-config-vue": "catalog:lint",
     "bumpp": "catalog:base",

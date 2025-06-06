@@ -15,8 +15,9 @@
 
 <!-- commands -->
 
-| Command                              | Title             |
-| ------------------------------------ | ----------------- |
-| `monorepoCodeGenerator.createEntity` | Create new entity |
+| Command                             | Title                          |
+| ----------------------------------- | ------------------------------ |
+| `wisemenCodeGenerator.createEntity` | Wisemen codegen: Create entity |
+| `wisemenCodeGenerator.createCrud`   | Wisemen codegen: Create CRUD   |
 
 <!-- commands -->

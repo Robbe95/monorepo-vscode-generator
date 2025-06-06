@@ -4,9 +4,9 @@ export default defineConfig({
   entry: [
     'src/index.ts',
   ],
-  watch: [
-    'src/**/*.ts',
-    '../base/src/**/*.ts',
-  ],
+  // watch: [
+  //   'src/**/*.ts',
+  //   '../base/src/**/*.ts',
+  // ],
 
 })

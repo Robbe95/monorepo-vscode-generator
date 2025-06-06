@@ -13,8 +13,8 @@ export default defineConfig({
   ],
 
   shims: false,
-  watch: [
-    'src/**/*.ts',
-    '../base/src/**/*.ts',
-  ],
+  // watch: [
+  //   'src/**/*.ts',
+  //   '../base/src/**/*.ts',
+  // ],
 })
