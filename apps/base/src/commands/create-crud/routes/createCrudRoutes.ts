@@ -7,6 +7,8 @@ import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
+import { skipFile } from '#utils/try-catch/skipFile.ts'
+import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 import { getCreateCrudRoutesFile } from './createCrudRoutes.files'
@@ -23,14 +25,23 @@ function getRoutePath({
   entityName: string
   route: RouteOption
 }): string {
-  if (route === 'index') {
-    return ''
+  switch (route) {
+    case 'index': {
+      return ''
+    }
+    case 'detail': {
+      return `:${entityName}Uuid`
+    }
+    case 'delete': {
+      return `:${entityName}Uuid/delete`
+    }
+    case 'update': {
+      return `:${entityName}Uuid/update`
+    }
+    case 'create': {
+      return `create`
+    }
   }
-  if (route === 'detail') {
-    return `:${entityName}Uuid`
-  }
-
-  return `:${entityName}Uuid/${route}`
 }
 
 function toRoute({
@@ -40,12 +51,12 @@ function toRoute({
   route: RouteOption
 }) {
   return `{
-    name: '${entityName}-${route}',
+    name: '${CaseTransformer.toKebabCase(entityName)}-${route}',
     path: '${getRoutePath({
       entityName,
       route,
     })}',
-    component: (): Promise<Component> => import('@/modules/${entityName}/features/${route}/views/${CaseTransformer.toPascalCase(entityName)}${CaseTransformer.toPascalCase(route)}View.vue'),
+    component: (): Promise<Component> => import('@/modules/${CaseTransformer.toKebabCase(entityName)}/features/${route}/views/${CaseTransformer.toPascalCase(entityName)}${CaseTransformer.toPascalCase(route)}View.vue'),
   }`
 }
 
@@ -56,10 +67,23 @@ export async function createCrudRoutes({
     name, path,
   } = getCreateCrudRoutesFile(entityName)
 
-  const sourceFile = await createEmptyFile({
+  const filteredRoutes = routes.filter((route) => route !== 'delete')
+
+  const sourceFileResponse = await tryCatch(createEmptyFile({
     name,
     path,
-  })
+  }))
+
+  if (sourceFileResponse.error) {
+    await skipFile({
+      name,
+      path,
+    })
+
+    return
+  }
+
+  const sourceFile = sourceFileResponse.data
 
   sourceFile.addImportDeclaration({
     isTypeOnly: true,
@@ -85,9 +109,9 @@ export async function createCrudRoutes({
         name: `${entityName}Routes`,
         initializer: `[
           {
-            path: '/${toPlural(entityName)}',
+            path: '/${CaseTransformer.toKebabCase(toPlural(entityName))}',
             children: [
-              ${routes.map((route) => toRoute({
+              ${filteredRoutes.map((route) => toRoute({
                 entityName,
                 route,
               }))}
@@ -119,7 +143,7 @@ async function addToRoutesIndex({
     ],
   })
 
-  routesSourceFile
+  const routesArray = routesSourceFile
     .getVariableDeclarationOrThrow('routes')
     .asKindOrThrow(SyntaxKind.VariableDeclaration)
     .getInitializerIfKindOrThrow(SyntaxKind.SatisfiesExpression)
@@ -135,7 +159,22 @@ async function addToRoutesIndex({
     .getPropertyOrThrow('children')
     .asKindOrThrow(SyntaxKind.PropertyAssignment)
     .getInitializerIfKindOrThrow(SyntaxKind.ArrayLiteralExpression)
-    .addElement(`...${entityName}Routes,`)
+
+  if (!routesArray) {
+    return
+  }
+
+  const existingRoute = routesArray
+    .getElements()
+    .find((element) => {
+      return element.getText() === `...${entityName}Routes`
+    })
+
+  if (existingRoute) {
+    return
+  }
+
+  routesArray.addElement(`...${entityName}Routes,`)
 
   routesSourceFile.saveSync()
 }

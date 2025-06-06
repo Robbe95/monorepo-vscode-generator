@@ -23,7 +23,7 @@ export async function createCrudUpdateFormModel({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -52,20 +52,20 @@ export async function createCrudUpdateFormModel({
     declarationKind: VariableDeclarationKind.Const,
     declarations: [
       {
-        name: `${entityName}UpdateFormModelSchema`,
+        name: `${entityName}UpdateFormSchema`,
         initializer: `z.object({
           uuid: ${entityName}UuidSchema,
         })`,
       },
     ],
-    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}UpdateFormModel`,
+    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}UpdateForm`,
   })
 
   sourceFile.addTypeAlias({
     isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateFormModel`,
-    type: `z.infer<typeof ${entityName}UpdateFormModelSchema>`,
+    name: `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
+    type: `z.infer<typeof ${entityName}UpdateFormSchema>`,
   })
 
-  await sourceFile.save()
+  sourceFile.saveSync()
 }

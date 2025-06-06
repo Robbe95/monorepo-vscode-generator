@@ -21,7 +21,7 @@ export async function createCrudUpdateTransformer({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -39,7 +39,14 @@ export async function createCrudUpdateTransformer({
     ],
   })
 
-  sourceFile.addStatements(`// TODO ${CaseTransformer.toPascalCase(entityName)}UpdateTransformer is generated. Update it with your properties.`)
+  sourceFile.addImportDeclaration({
+    isTypeOnly: true,
+    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
+    namedImports: [
+      `${CaseTransformer.toPascalCase(entityName)}Detail`,
+    ],
+  })
+
   sourceFile.addClass({
     isExported: true,
     name: `${CaseTransformer.toPascalCase(entityName)}UpdateTransformer`,
@@ -57,6 +64,23 @@ export async function createCrudUpdateTransformer({
         returnType: `any`, // Update this to the correct DTO type
         statements: [
           `return { /* TODO Map form properties to DTO properties */ }`,
+        ],
+      },
+      {
+        isStatic: true,
+        name: 'toForm',
+        parameters: [
+          {
+            name: `${CaseTransformer.toCamelCase(entityName)}`,
+            type: `${CaseTransformer.toPascalCase(entityName)}Detail`, // Update this to the correct DTO type
+          },
+        ],
+        returnType: `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
+        statements: [
+          `return { 
+            uuid: ${CaseTransformer.toCamelCase(entityName)}.uuid,
+            /* TODO Map dto properties to form properties */
+           }`,
         ],
       },
     ],

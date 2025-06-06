@@ -1,6 +1,6 @@
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
-export function skipFile({
+export async function skipFile({
   name, path,
 }: {
   name: string
@@ -8,7 +8,7 @@ export function skipFile({
 }) {
   const logger = getLogger()
 
-  logger.error(
+  await logger.error(
     `File ${name} already exists in path ${path}. Skipping creation...`,
   )
 }

@@ -21,7 +21,7 @@ export async function createCrudIndexTransformer({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -31,14 +31,21 @@ export async function createCrudIndexTransformer({
 
   const sourceFile = sourceFileResponse.data
 
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Index`,
-    ],
-  })
-
-  sourceFile.addStatements(`// TODO ${CaseTransformer.toPascalCase(entityName)}IndexTransformer is generated. Update it with your properties.`)
+  sourceFile.addImportDeclarations([
+    {
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
+      namedImports: [
+        `${CaseTransformer.toPascalCase(entityName)}Index`,
+      ],
+    },
+    {
+      isTypeOnly: true,
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      namedImports: [
+        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+      ],
+    },
+  ])
 
   sourceFile.addClass({
     isExported: true,
@@ -47,7 +54,6 @@ export async function createCrudIndexTransformer({
       {
         isStatic: true,
         name: 'fromDto',
-        leadingTrivia: `// TODO Update the type of dto to the correct DTO type for ${CaseTransformer.toPascalCase(entityName)}Index`,
         parameters: [
           {
             name: 'dto',
@@ -59,6 +65,7 @@ export async function createCrudIndexTransformer({
           `
             return {
               uuid: dto.uuid as ${CaseTransformer.toPascalCase(entityName)}Uuid,
+              // TODO Transform other properties from dto to ${CaseTransformer.toPascalCase(entityName)}Index
             }
           `,
         ],

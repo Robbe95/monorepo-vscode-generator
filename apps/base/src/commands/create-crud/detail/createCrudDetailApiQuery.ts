@@ -2,6 +2,8 @@ import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCr
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
+import { skipFile } from '#utils/try-catch/skipFile.ts'
+import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 import { getCreateCrudDetailApiQueryFile } from './createCrudDetail.files'
@@ -25,9 +27,17 @@ async function addToServiceFile(entityName: string) {
     projectPath: BASE_PATH,
   })
 
+  const existingMethod = serviceSourceFile
+    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
+    .getMethod('getByUuid')
+
+  if (existingMethod) {
+    return
+  }
+
   serviceSourceFile.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Detail.model.ts`,
+    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
     namedImports: [
       `${CaseTransformer.toPascalCase(entityName)}Detail`,
     ],
@@ -63,7 +73,7 @@ async function addToServiceFile(entityName: string) {
       isAsync: true,
       isStatic: true,
       name: `getByUuid`,
-      leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Detail item.`,
+      leadingTrivia: `// TODO Update the update logic to fetch a single ${CaseTransformer.toPascalCase(entityName)}Detail item by UUID.`,
       parameters: [
         {
           name: 'uuid',
@@ -71,12 +81,7 @@ async function addToServiceFile(entityName: string) {
         },
       ],
       returnType: `Promise<${CaseTransformer.toPascalCase(entityName)}Detail>`,
-      statements: [
-        `
-        const ${entityName}DetailResponse = {} as any
-        return ${CaseTransformer.toPascalCase(entityName)}DetailTransformer.fromDto(${entityName}DetailResponse.data)
-        `,
-      ],
+      statements: [],
     })
 
   serviceSourceFile.saveSync()
@@ -87,11 +92,22 @@ async function createQueryFile(entityName: string) {
     name, path,
   } = getCreateCrudDetailApiQueryFile(entityName)
 
-  const querySourceFile = await createEmptyFile({
+  const sourceFileResponse = await tryCatch(createEmptyFile ({
     name,
     projectPath: BASE_PATH,
     path,
-  })
+  }))
+
+  if (sourceFileResponse.error) {
+    await skipFile({
+      name,
+      path,
+    })
+
+    return
+  }
+
+  const querySourceFile = sourceFileResponse.data
 
   querySourceFile.addImportDeclarations([
     {
@@ -165,7 +181,6 @@ async function createQueryFile(entityName: string) {
   querySourceFile.addFunction({
     isExported: true,
     name: `${entityName}DetailQuery`,
-    leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Detail items.`,
     parameters: [
       {
         name: `${entityName}Uuid`,
@@ -189,7 +204,6 @@ async function createQueryFile(entityName: string) {
   querySourceFile.addFunction({
     isExported: true,
     name: `use${CaseTransformer.toPascalCase(entityName)}DetailQuery`,
-    leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Detail items.`,
     parameters: [
       {
         name: `${entityName}Uuid`,
@@ -205,7 +219,6 @@ async function createQueryFile(entityName: string) {
   querySourceFile.addFunction({
     isExported: true,
     name: `use${CaseTransformer.toPascalCase(entityName)}DetailPrefetchQuery`,
-    leadingTrivia: `// TODO Implement the logic to prefetch ${CaseTransformer.toPascalCase(entityName)}Detail items.`,
     parameters: [
       {
         name: `${entityName}Uuid`,

@@ -23,7 +23,7 @@ export async function createCrudCreateFormModel({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -40,22 +40,31 @@ export async function createCrudCreateFormModel({
     ],
   })
 
+  sourceFile.addImportDeclaration({
+    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+    namedImports: [
+      `${CaseTransformer.toCamelCase(entityName)}UuidSchema`,
+    ],
+  })
+
   sourceFile.addVariableStatement({
     isExported: true,
     declarationKind: VariableDeclarationKind.Const,
     declarations: [
       {
-        name: `${entityName}CreateFormModelSchema`,
-        initializer: `z.object({})`,
+        name: `${entityName}CreateFormSchema`,
+        initializer: `z.object({
+          uuid: ${CaseTransformer.toCamelCase(entityName)}UuidSchema,
+        })`,
       },
     ],
-    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}CreateFormModel`,
+    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}CreateForm`,
   })
 
   sourceFile.addTypeAlias({
     isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}CreateFormModel`,
-    type: `z.infer<typeof ${entityName}CreateFormModelSchema>`,
+    name: `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+    type: `z.infer<typeof ${entityName}CreateFormSchema>`,
   })
 
   await sourceFile.save()

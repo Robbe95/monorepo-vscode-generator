@@ -21,7 +21,7 @@ export async function createCrudDetailTransformer({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -31,14 +31,21 @@ export async function createCrudDetailTransformer({
 
   const sourceFile = sourceFileResponse.data
 
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Detail`,
-    ],
-  })
-
-  sourceFile.addStatements(`// TODO ${CaseTransformer.toPascalCase(entityName)}DetailTransformer is generated. Update it with your properties.`)
+  sourceFile.addImportDeclarations([
+    {
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
+      namedImports: [
+        `${CaseTransformer.toPascalCase(entityName)}Detail`,
+      ],
+    },
+    {
+      isTypeOnly: true,
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      namedImports: [
+        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+      ],
+    },
+  ])
 
   sourceFile.addClass({
     isExported: true,
@@ -47,7 +54,6 @@ export async function createCrudDetailTransformer({
       {
         isStatic: true,
         name: 'fromDto',
-        leadingTrivia: `// TODO Update the type of dto to the correct DTO type for ${CaseTransformer.toPascalCase(entityName)}Detail`,
         parameters: [
           {
             name: 'dto',
@@ -59,6 +65,7 @@ export async function createCrudDetailTransformer({
           `
             return {
               uuid: dto.uuid as ${CaseTransformer.toPascalCase(entityName)}Uuid,
+              // TODO Map other properties from dto to ${CaseTransformer.toPascalCase(entityName)}Detail
             }
           `,
         ],

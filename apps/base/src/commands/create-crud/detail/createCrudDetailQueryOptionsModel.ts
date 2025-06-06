@@ -21,7 +21,7 @@ export async function createCrudDetailQueryModel({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })

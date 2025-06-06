@@ -20,3 +20,17 @@ export function getCreateCrudCreateApiMutationFile(entityName: string) {
     path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/mutations`,
   }
 }
+
+export function getCreateCrudCreateViewFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}CreateView.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/create/views`,
+  }
+}
+
+export function getCreateCrudCreateFormFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}CreateForm.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/create/components`,
+  }
+}

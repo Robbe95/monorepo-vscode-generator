@@ -10,9 +10,13 @@ export async function getTsProject(path: string): Promise<Project> {
   if (mapOfProjectPaths.has(path)) {
     return mapOfProjectPaths.get(path) as Project
   }
+  let tsConfigJsonName = 'tsconfig.json'
 
+  if (path === './') {
+    tsConfigJsonName = 'tsconfig.app.json'
+  }
   const projectToAdd = new Project({
-    tsConfigFilePath: `${workspaceRoot}/${path}/tsconfig.json`,
+    tsConfigFilePath: `${workspaceRoot}/${path}/${tsConfigJsonName}`,
   })
 
   mapOfProjectPaths.set(path, projectToAdd)

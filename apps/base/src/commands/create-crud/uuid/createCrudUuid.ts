@@ -1,7 +1,10 @@
 import { VariableDeclarationKind } from 'ts-morph'
 
+import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
+import { skipFile } from '#utils/try-catch/skipFile.ts'
+import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
 
 import { getCreateCrudUuidModelFile } from './createCrudUuid.files'
 
@@ -16,10 +19,22 @@ export async function createCrudUuid({
     name, path,
   } = getCreateCrudUuidModelFile(entityName)
 
-  const sourceFile = await createEmptyFile({
+  const sourceFileResponse = await tryCatch(createEmptyFile({
     name,
+    projectPath: BASE_PATH,
     path,
-  })
+  }))
+
+  if (sourceFileResponse.error) {
+    await skipFile({
+      name,
+      path,
+    })
+
+    return
+  }
+
+  const sourceFile = sourceFileResponse.data
 
   sourceFile.addImportDeclaration({
     moduleSpecifier: 'zod',

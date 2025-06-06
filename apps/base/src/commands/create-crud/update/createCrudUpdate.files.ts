@@ -20,3 +20,24 @@ export function getCreateCrudUpdateApiMutationFile(entityName: string) {
     path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/mutations`,
   }
 }
+
+export function getCreateCrudUpdateDataProviderViewFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}UpdateDataProviderView.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/views`,
+  }
+}
+
+export function getCreateCrudUpdateViewFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}UpdateView.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/views`,
+  }
+}
+
+export function getCreateCrudUpdateFormFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}UpdateForm.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/components`,
+  }
+}

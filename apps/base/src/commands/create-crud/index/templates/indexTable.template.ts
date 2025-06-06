@@ -1,5 +1,7 @@
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
+import { addTestId } from '#utils/test-id/addTestId.utils.ts'
+import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
 export function getIndexTableTemplate(entityName: string): string {
   const kebabCase = CaseTransformer.toKebabCase(entityName)
@@ -7,6 +9,21 @@ export function getIndexTableTemplate(entityName: string): string {
   const camelCase = CaseTransformer.toCamelCase(entityName)
   const upperCase = CaseTransformer.toUpperCase(entityName)
   const snakeCase = CaseTransformer.toSnakeCase(entityName)
+  const humanReadable = CaseTransformer.toHumanReadable(entityName)
+
+  addTranslation({
+    key: `module.${snakeCase}.uuid`,
+    value: `${humanReadable} UUID`,
+  })
+
+  addTestId({
+    key: `${toPlural(upperCase)}.TABLE.NAME_LINK`,
+    value: `${kebabCase}-overview-table-name-link`,
+  })
+  addTestId({
+    key: `${toPlural(upperCase)}.TABLE.CONTAINER`,
+    value: `${kebabCase}-overview-table-container`,
+  })
 
   const template = `
   <script setup lang="ts">

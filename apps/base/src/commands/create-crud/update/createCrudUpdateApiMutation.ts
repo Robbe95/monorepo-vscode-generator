@@ -29,7 +29,7 @@ async function createMutationFile(entityName: string) {
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -118,6 +118,11 @@ async function addToServiceFile(entityName: string) {
     projectPath: BASE_PATH,
   })
 
+  if (serviceSourceFile.getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
+    .getMethod('update')) {
+    return
+  }
+
   serviceSourceFile.addImportDeclarations([
     {
       isTypeOnly: true,
@@ -134,7 +139,7 @@ async function addToServiceFile(entityName: string) {
       ],
     },
     {
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/update/${entityName}UpdateTransformer.ts`,
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/update/${entityName}Update.transformer.ts`,
       namedImports: [
         `${CaseTransformer.toPascalCase(entityName)}UpdateTransformer`,
       ],
@@ -158,9 +163,7 @@ async function addToServiceFile(entityName: string) {
         },
       ],
       returnType: `Promise<void>`,
-      statements: [
-        `const dto = ${CaseTransformer.toPascalCase(entityName)}UpdateTransformer.toDto(form)`,
-      ],
+      statements: [],
     })
 
   serviceSourceFile.saveSync()

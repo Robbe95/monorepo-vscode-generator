@@ -1,10 +1,29 @@
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
+import { addTestId } from '#utils/test-id/addTestId.utils.ts'
+import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
 export function getIndexViewTemplate(entityName: string): string {
   const kebabCase = CaseTransformer.toKebabCase(entityName)
   const pascalCase = CaseTransformer.toPascalCase(entityName)
   const camelCase = CaseTransformer.toCamelCase(entityName)
   const upperCase = CaseTransformer.toUpperCase(entityName)
+  const humanReadable = CaseTransformer.toHumanReadable(entityName)
+
+  addTranslation({
+    key: `module.${camelCase}.label.plural`,
+    value: `${CaseTransformer.toHumanReadable(toPlural(entityName))}`,
+  })
+
+  addTranslation({
+    key: `module.${camelCase}.create`,
+    value: `Create ${humanReadable}`,
+  })
+
+  addTestId({
+    key: `${toPlural(upperCase)}.OVERVIEW.CREATE_BUTTON`,
+    value: `${kebabCase}-overview-create-button`,
+  })
 
   const template = `
   <script setup lang="ts">
@@ -15,19 +34,16 @@ import {
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { Permission } from '@/client'
 import AppErrorState from '@/components/app/error-state/AppErrorState.vue'
 import AppPaginationSearchField from '@/components/app/search/AppPaginationSearchField.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import { useDocumentTitle } from '@/composables/document-title/documentTitle.composable'
 import { TEST_ID } from '@/constants/testId.constant.ts'
-import type { ${pascalCase}IndexQueryOptions } from @/models/${kebabCase}/index/${camelCase}IndexQueryOptions.model
+import type { ${pascalCase}IndexQueryOptions } from '@/models/${kebabCase}/index/${camelCase}IndexQueryOptions.model'
 import { use${pascalCase}IndexQuery } from '@/modules/${kebabCase}/api/queries/${camelCase}Index.query'
-import ${pascalCase}OverviewTable from '@/modules/${kebabCase}/features/overview/components/${pascalCase}OverviewTable.vue'
-import { useAuthStore } from '@/stores/auth.store'
+import ${pascalCase}IndexTable from '@/modules/${kebabCase}/features/index/components/${pascalCase}IndexTable.vue'
 
 const i18n = useI18n()
-const authStore = useAuthStore()
 
 const documentTitle = useDocumentTitle()
 
@@ -42,7 +58,10 @@ const ${camelCase}IndexQuery = use${pascalCase}IndexQuery(pagination.paginationO
 
 const isLoading = computed<boolean>(() => ${camelCase}IndexQuery.isLoading.value)
 const error = computed<unknown>(() => ${camelCase}IndexQuery.error.value)
-const isCreateButtonVisible = computed<boolean>(() => authStore.hasPermission(Permission.${upperCase}_CREATE))
+const isCreateButtonVisible = computed<boolean>(() => {
+  // TODO: Implement permission check for create button visibility
+  return true
+})
 </script>
 
 <template>
@@ -76,7 +95,7 @@ const isCreateButtonVisible = computed<boolean>(() => authStore.hasPermission(Pe
           :pagination="pagination"
         />
 
-        <${pascalCase}OverviewTable
+        <${pascalCase}IndexTable
           :data="${camelCase}IndexQuery.data.value"
           :is-loading="isLoading"
           :pagination="pagination"

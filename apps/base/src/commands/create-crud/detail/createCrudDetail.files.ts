@@ -31,3 +31,17 @@ export function getCreateCrudDetailApiQueryFile(entityName: string) {
     path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/queries`,
   }
 }
+
+export function getCreateCrudDetailViewFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}DetailView.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/detail/views`,
+  }
+}
+
+export function getCreateCrudDetailDataProviderFile(entityName: string) {
+  return {
+    name: `${CaseTransformer.toPascalCase(entityName)}DetailDataProvider.vue`,
+    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/detail/views`,
+  }
+}

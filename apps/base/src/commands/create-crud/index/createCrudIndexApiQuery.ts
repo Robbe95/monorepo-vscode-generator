@@ -2,6 +2,8 @@ import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCr
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
+import { skipFile } from '#utils/try-catch/skipFile.ts'
+import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 import { getCreateCrudIndexApiQueryFile } from './createCrudIndex.files'
@@ -25,9 +27,15 @@ async function addToServiceFile(entityName: string) {
     projectPath: BASE_PATH,
   })
 
+  if (serviceSourceFile
+    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
+    .getMethod('getAll')) {
+    return
+  }
+
   serviceSourceFile.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Index.model.ts`,
+    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
     namedImports: [
       `${CaseTransformer.toPascalCase(entityName)}Index`,
     ],
@@ -41,6 +49,14 @@ async function addToServiceFile(entityName: string) {
     ],
   })
 
+  serviceSourceFile.addImportDeclaration({
+    isTypeOnly: true,
+    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}IndexQueryOptions.model.ts`,
+    namedImports: [
+      `${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions`,
+    ],
+  })
+
   serviceSourceFile
     .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
     .addMethod({
@@ -48,13 +64,14 @@ async function addToServiceFile(entityName: string) {
       isStatic: true,
       name: `getAll`,
       leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Index items.`,
-      returnType: `Promise<PaginatedData<${CaseTransformer.toPascalCase(entityName)}Index>>`,
-      statements: [
-        `return {
-          data: [],
-          meta: {} as any
-        }`,
+      parameters: [
+        {
+          name: 'paginationOptions',
+          type: `PaginationOptions<${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions>`,
+        },
       ],
+      returnType: `Promise<PaginatedData<${CaseTransformer.toPascalCase(entityName)}Index>>`,
+      statements: [],
     })
 
   await serviceSourceFile.save()
@@ -65,11 +82,22 @@ async function createQueryFile(entityName: string) {
     name, path,
   } = getCreateCrudIndexApiQueryFile(entityName)
 
-  const querySourceFile = await createEmptyFile({
+  const sourceFileResponse = await tryCatch(createEmptyFile ({
     name,
     projectPath: BASE_PATH,
     path,
-  })
+  }))
+
+  if (sourceFileResponse.error) {
+    await skipFile({
+      name,
+      path,
+    })
+
+    return
+  }
+
+  const querySourceFile = sourceFileResponse.data
 
   querySourceFile.addImportDeclaration({
     isTypeOnly: true,
@@ -137,7 +165,9 @@ async function createQueryFile(entityName: string) {
           return ${CaseTransformer.toPascalCase(entityName)}Service.getAll(paginationOptions.value)
         },
         queryKey: {
-          ${CaseTransformer.toKebabCase(entityName)}Index: {},
+          ${CaseTransformer.toKebabCase(entityName)}Index: {
+            paginationOptions,
+          },
         }
       })`,
     ],

@@ -21,7 +21,7 @@ export async function createCrudCreateTransformer({
   }))
 
   if (sourceFileResponse.error) {
-    skipFile({
+    await skipFile({
       name,
       path,
     })
@@ -39,7 +39,6 @@ export async function createCrudCreateTransformer({
     ],
   })
 
-  sourceFile.addStatements(`// TODO ${CaseTransformer.toPascalCase(entityName)}CreateTransformer is generated. Update it with your properties.`)
   sourceFile.addClass({
     isExported: true,
     name: `${CaseTransformer.toPascalCase(entityName)}CreateTransformer`,
@@ -47,7 +46,6 @@ export async function createCrudCreateTransformer({
       {
         isStatic: true,
         name: 'toDto',
-        leadingTrivia: `// TODO Update the type of form to the correct form type for ${CaseTransformer.toPascalCase(entityName)}CreateTransformer`,
         parameters: [
           {
             name: 'form',

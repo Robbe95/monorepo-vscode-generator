@@ -1,5 +1,6 @@
 import { createCrudUpdateApiMutation } from './createCrudUpdateApiMutation'
 import { createCrudUpdateFormModel } from './createCrudUpdateFormModel'
+import { createCrudUpdateTemplates } from './createCrudUpdateTemplates'
 import { createCrudUpdateTransformer } from './createCrudUpdateTransformer'
 
 export interface CreateCrudUpdateParams {
@@ -16,6 +17,9 @@ export async function createCrudUpdate({
     entityName,
   })
   await createCrudUpdateApiMutation({
+    entityName,
+  })
+  createCrudUpdateTemplates({
     entityName,
   })
 }

@@ -12,6 +12,16 @@ export const CaseTransformer = {
       })
       .replace(/[^a-z0-9]/gi, '')
   },
+  toHumanReadable: (str: string) => {
+    return str
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/[^a-z0-9\s]/gi, '') // Remove non-alphanumeric characters except spaces
+      .trim()
+      .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
+      .toLowerCase()
+      .replace(/^\w/, (c) => c.toUpperCase()) // Capitalize the first letter
+  },
   /*
    * @param {string} str - The string to convert.
    * @returns {string} The kebab-cased string.
@@ -45,6 +55,7 @@ export const CaseTransformer = {
       .toLowerCase()
       .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscores
   },
+
   /*
    * @param {string} str - The string to convert.
    * @returns {string} The uppercased string.
@@ -55,4 +66,15 @@ export const CaseTransformer = {
       .toUpperCase()
       .replace(/[^A-Z0-9]/gi, '_') // Replace non-alphanumeric with underscores
   },
+}
+
+export function allCases(str: string) {
+  return {
+    camelCase: CaseTransformer.toCamelCase(str),
+    humanReadable: CaseTransformer.toHumanReadable(str),
+    kebabCase: CaseTransformer.toKebabCase(str),
+    pascalCase: CaseTransformer.toPascalCase(str),
+    snakeCase: CaseTransformer.toSnakeCase(str),
+    upperCase: CaseTransformer.toUpperCase(str),
+  } as const
 }

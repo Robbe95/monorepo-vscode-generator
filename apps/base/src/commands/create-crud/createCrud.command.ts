@@ -4,8 +4,10 @@ import { getInputString } from '#utils/input/getInputString.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
 import { createCrudCreate } from './create/createCrudCreate'
+import { createCrudDelete } from './delete/createCrudDelete'
 import { createCrudDetail } from './detail/createCrudDetail'
 import { createCrudIndex } from './index/createCrudIndex'
+import { createCrudQueryKeys } from './query-keys/createCrudQueryKeys'
 import { createCrudRoutes } from './routes/createCrudRoutes'
 import { createCrudService } from './service/createCrudService'
 import { createCrudUpdate } from './update/createCrudUpdate'
@@ -76,6 +78,11 @@ export async function createCrudCommand() {
     entityName,
   })
 
+  await createCrudQueryKeys({
+    entityName,
+    keys: selectedCruds.filter((key) => key === 'index' || key === 'update'),
+  })
+
   if (crudSelection.includes('Index')) {
     logger.info(`Generating Index for ${entityName}`)
     await createCrudIndex({
@@ -103,5 +110,8 @@ export async function createCrudCommand() {
   if (crudSelection.includes('Delete')) {
     logger.info(`Generating Delete for ${entityName}`)
     // Call the function to generate Delete
+    await createCrudDelete({
+      entityName,
+    })
   }
 }
