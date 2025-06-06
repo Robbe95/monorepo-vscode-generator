@@ -16,6 +16,7 @@
     "release": "pnpm publish:vscode && pnpm publish:cli",
     "clean": "pnpm -r clean",
     "build": "pnpm -r build",
+    "bump": "bumpp --no-push",
     "typecheck": "turbo typecheck",
     "test": "vitest --run",
     "precommit": "pnpm lint && pnpm typecheck && pnpm test"
