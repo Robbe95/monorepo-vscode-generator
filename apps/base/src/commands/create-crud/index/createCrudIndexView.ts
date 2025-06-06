@@ -11,21 +11,21 @@ export interface CreateCrudIndexViewParams {
   entityName: string
 }
 
-export function createCrudIndexView({
+export async function createCrudIndexView({
   entityName,
 }: CreateCrudIndexViewParams) {
   const viewFile = getCreateCrudIndexViewFile(entityName)
   const tableFile = getCreateCrudIndexViewTableFile(entityName)
 
-  createTemplate({
+  await createTemplate({
     fileName: viewFile.name,
     filePath: viewFile.path,
-    templateString: getIndexViewTemplate(entityName),
+    templateString: await getIndexViewTemplate(entityName),
   })
 
-  createTemplate({
+  await createTemplate({
     fileName: tableFile.name,
     filePath: tableFile.path,
-    templateString: getIndexTableTemplate(entityName),
+    templateString: await getIndexTableTemplate(entityName),
   })
 }

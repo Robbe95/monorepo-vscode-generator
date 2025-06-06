@@ -3,15 +3,15 @@ import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getCreateCrudCreateFormTemplate(entityName: string) {
+export async function getCreateCrudCreateFormTemplate(entityName: string) {
   const entityCasing = allCases(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.create.title`,
     value: `Create ${entityCasing.humanReadable}`,
   })
 
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.info`,
     value: `${entityCasing.humanReadable} Info`,
   })

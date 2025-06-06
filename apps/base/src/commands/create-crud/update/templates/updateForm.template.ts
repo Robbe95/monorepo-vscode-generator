@@ -3,14 +3,14 @@ import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getUpdateFormTemplate(entityName: string): string {
+export async function getUpdateFormTemplate(entityName: string) {
   const entityCasing = allCases(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.title`,
     value: `${entityCasing.humanReadable}`,
   })
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.uuid`,
     value: `${entityCasing.humanReadable}`,
   })

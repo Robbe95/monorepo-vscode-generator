@@ -11,21 +11,21 @@ export interface CreateCrudDetailViewParams {
   entityName: string
 }
 
-export function createCrudDetailView({
+export async function createCrudDetailView({
   entityName,
 }: CreateCrudDetailViewParams) {
   const viewFile = getCreateCrudDetailViewFile(entityName)
   const dataProviderFile = getCreateCrudDetailDataProviderFile(entityName)
 
-  createTemplate({
+  await createTemplate({
     fileName: viewFile.name,
     filePath: viewFile.path,
-    templateString: getDetailViewTemplate({
+    templateString: await getDetailViewTemplate({
       entityName,
     }),
   })
 
-  createTemplate({
+  await createTemplate({
     fileName: dataProviderFile.name,
     filePath: dataProviderFile.path,
     templateString: getDetailDataProviderTemplate({

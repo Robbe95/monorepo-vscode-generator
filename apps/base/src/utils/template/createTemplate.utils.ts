@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
 export interface CreateTemplateParams {
@@ -8,19 +9,19 @@ export interface CreateTemplateParams {
   templateString: string
 }
 
-export function createTemplate({
+export async function createTemplate({
   fileName,
   filePath,
   templateString,
-}: CreateTemplateParams): void {
+}: CreateTemplateParams) {
   const logger = getLogger()
+  const rootFolder = await getRootFolder()
 
-  // make a file in the filePath with the fileName and templateString if it does not exist
-  fs.mkdirSync(filePath, {
+  fs.mkdirSync(`${rootFolder}/${filePath}`, {
     recursive: true,
   })
 
-  const fileFullPath = `${filePath}/${fileName}`
+  const fileFullPath = `${rootFolder}/${filePath}/${fileName}`
 
   if (fs.existsSync(fileFullPath)) {
     logger.info(`File already exists: ${fileFullPath}. Skipping creation.`)

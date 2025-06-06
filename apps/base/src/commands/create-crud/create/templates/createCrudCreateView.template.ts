@@ -1,10 +1,10 @@
 import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getCreateCrudCreateViewTemplate(entityName: string) {
+export async function getCreateCrudCreateViewTemplate(entityName: string) {
   const entityCasing = allCases(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.create.title`,
     value: `Create ${entityCasing.humanReadable}`,
   })

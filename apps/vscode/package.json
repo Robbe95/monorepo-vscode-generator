@@ -1,7 +1,7 @@
 {
   "publisher": "robbe95",
-  "name": "monorepo-code-generator",
-  "displayName": "monorepo-code-generator",
+  "name": "wisemen-code-generator",
+  "displayName": "wisemen-code-generator",
   "version": "0.0.3",
   "private": false,
   "packageManager": "pnpm@10.11.0",
@@ -36,18 +36,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "monorepoCodeGenerator.createEntity",
+        "command": "wisemenCodeGenerator.createEntity",
         "title": "Create new entity"
       },
       {
-        "command": "monorepoCodeGenerator.createCrud",
+        "command": "wisemenCodeGenerator.createCrud",
         "title": "Create crud"
       }
 
     ],
     "configuration": {
       "type": "object",
-      "title": "monorepo-code-generator",
+      "title": "wisemen-code-generator",
       "properties": {}
     }
   },

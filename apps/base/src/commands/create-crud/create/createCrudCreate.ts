@@ -19,7 +19,7 @@ export async function createCrudCreate({
   await createCrudCreateApiMutation({
     entityName,
   })
-  createCrudCreateTemplates({
+  await createCrudCreateTemplates({
     entityName,
   })
 }

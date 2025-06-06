@@ -1,4 +1,3 @@
-import { setVscodeAbstractions } from '#abstractions/setVscodeAbstractions.ts'
 import {
   createCrudCommand,
   createNewEntityCommand,
@@ -9,14 +8,16 @@ import {
   useCommands,
 } from 'reactive-vscode'
 
+import { setVscodeAbstractions } from '#abstractions/setVscodeAbstractions.ts'
+
 const {
   activate, deactivate,
 } = defineExtension(() => {
   setVscodeAbstractions()
   setInputType('vscode')
   useCommands({
-    'monorepoCodeGenerator.createEntity': createNewEntityCommand,
-    'monorepoCodeGenerator.createCrud': createCrudCommand,
+    'wisemenCodeGenerator.createCrud': createCrudCommand,
+    'wisemenCodeGenerator.createEntity': createNewEntityCommand,
   })
 })
 

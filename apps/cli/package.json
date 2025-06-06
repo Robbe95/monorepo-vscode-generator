@@ -1,9 +1,9 @@
 {
   "publisher": "robbe95",
-  "name": "monorepo-code-generator",
-  "displayName": "monorepo-code-generator",
+  "name": "wisemen-code-generator-cli",
+  "displayName": "wisemen-code-generator-cli",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "private": false,
   "packageManager": "pnpm@10.11.0",
   "description": "",
@@ -14,7 +14,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Robbe95/monorepo-vscode-generator"
+    "url": "https://github.com/Robbe95/wisemen-code-generator"
   },
   "categories": [
     "Other"
@@ -28,7 +28,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsdown src/index.ts",
+    "dev": "tsdown src/index.ts --watch",
     "build": "tsdown src/index.ts",
     "start": "node dist/index.js",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",

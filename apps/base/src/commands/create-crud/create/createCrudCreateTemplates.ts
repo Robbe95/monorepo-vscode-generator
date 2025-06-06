@@ -11,21 +11,21 @@ export interface CreateCrudIndexViewParams {
   entityName: string
 }
 
-export function createCrudCreateTemplates({
+export async function createCrudCreateTemplates({
   entityName,
 }: CreateCrudIndexViewParams) {
   const viewFile = getCreateCrudCreateViewFile(entityName)
   const formFile = getCreateCrudCreateFormFile(entityName)
 
-  createTemplate({
+  await createTemplate({
     fileName: viewFile.name,
     filePath: viewFile.path,
-    templateString: getCreateCrudCreateViewTemplate(entityName),
+    templateString: await getCreateCrudCreateViewTemplate(entityName),
   })
 
-  createTemplate({
+  await createTemplate({
     fileName: formFile.name,
     filePath: formFile.path,
-    templateString: getCreateCrudCreateFormTemplate(entityName),
+    templateString: await getCreateCrudCreateFormTemplate(entityName),
   })
 }

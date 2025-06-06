@@ -23,7 +23,7 @@ export async function createCrudDetail({
   await createCrudDetailApiQuery({
     entityName,
   })
-  createCrudDetailView({
+  await createCrudDetailView({
     entityName,
   })
 }

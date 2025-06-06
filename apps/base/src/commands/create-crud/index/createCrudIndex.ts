@@ -23,7 +23,7 @@ export async function createCrudIndex({
   await createCrudIndexApiQuery({
     entityName,
   })
-  createCrudIndexView({
+  await createCrudIndexView({
     entityName,
   })
 }

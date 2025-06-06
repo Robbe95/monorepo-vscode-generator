@@ -1,5 +1,5 @@
 {
-  "name": "monorepo-code-generator",
+  "name": "wisemen-code-generator",
   "type": "module",
   "packageManager": "pnpm@10.8.1",
   "version": "0.0.0",

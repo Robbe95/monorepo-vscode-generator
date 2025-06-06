@@ -9,7 +9,8 @@ import {
   useLogger,
   useWorkspaceFolders,
 } from 'reactive-vscode'
-import { QuickPickItem, window } from 'vscode'
+import type { QuickPickItem } from 'vscode'
+import { window } from 'vscode'
 
 export function setVscodeAbstractions() {
   setLoggerExtraction(vscodeLogger())
@@ -19,7 +20,7 @@ export function setVscodeAbstractions() {
 }
 
 function vscodeLogger() {
-  return useLogger('monorepo-code-generator')
+  return useLogger('wisemen-code-generator')
 }
 
 function vscodeGetInputString(input: {
@@ -53,30 +54,33 @@ function vscodeGetInputString(input: {
 
 async function vscodeGetInputSelect<TMulti extends boolean>({
   title,
-  options,
-  placeholder,
   canSelectMultiple,
   canTypeValue = false,
+  options,
+  placeholder,
 }: InputSelectOptions<TMulti>) {
-
   if (canSelectMultiple && canTypeValue) {
     throw new Error('You cannot select multiple options and type a value at the same time.')
   }
 
   const typingOption = {
+    description: 'You can type a value that is not in the list',
     label: 'Custom value',
-    description: 'You can type a value that is not in the list', 
   }
 
   const mappedOptions: QuickPickItem[] = options.map((option) => ({
-    label: option.label,
     description: option.description,
+    label: option.label,
     picked: option.initialPicked,
-    
+
   }))
 
-
-  const optionsWithTyping = canTypeValue ? [...mappedOptions, typingOption] : mappedOptions
+  const optionsWithTyping = canTypeValue
+    ? [
+        ...mappedOptions,
+        typingOption,
+      ]
+    : mappedOptions
   const selection = await window.showQuickPick(optionsWithTyping, {
     title,
     canPickMany: canSelectMultiple,
@@ -84,14 +88,14 @@ async function vscodeGetInputSelect<TMulti extends boolean>({
 
   })
 
-
-
-  if(canSelectMultiple) {
+  if (canSelectMultiple) {
     const multiSelection = selection as any as { label: string }[]
+
     if (multiSelection.length === 0) {
       throw new Error('No selection made')
     }
-    return multiSelection.map(item => item.label)
+
+    return multiSelection.map((item) => item.label)
   }
 
   if (selection == null) {
@@ -103,6 +107,7 @@ async function vscodeGetInputSelect<TMulti extends boolean>({
       title,
       prompt: 'Type your custom value:',
     })
+
     return customValue
   }
 

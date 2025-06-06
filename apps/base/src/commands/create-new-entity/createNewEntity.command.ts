@@ -5,7 +5,6 @@ import { createNewEntityPayloadModule } from '#commands/create-new-entity/create
 import { runEslintFix } from '#utils/cli/runEslintFix.utils.ts'
 import { runPayloadGenerate } from '#utils/cli/runPayloadGenerate.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
-import { getInputSelect } from '#utils/input/getInputSelect.utils.ts'
 import { getInputString } from '#utils/input/getInputString.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
@@ -15,8 +14,6 @@ import { createNewEntityNuxtApi } from './createNewEntityNuxtApi'
 export async function createNewEntityCommand() {
   const rootWorkspacePath = await getRootFolder()
   const logger = getLogger()
-
-  console.log(`Creating new entity}`)
 
   const entityName = await getInputString({
     title: 'Create New Entity',
@@ -45,7 +42,6 @@ export async function createNewEntityCommand() {
     entityName,
     layerName,
   })
-
 
   await runPayloadGenerate()
   await runEslintFix()

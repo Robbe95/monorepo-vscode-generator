@@ -3,19 +3,19 @@ import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getIndexViewTemplate(entityName: string): string {
+export async function getIndexViewTemplate(entityName: string): Promise<string> {
   const kebabCase = CaseTransformer.toKebabCase(entityName)
   const pascalCase = CaseTransformer.toPascalCase(entityName)
   const camelCase = CaseTransformer.toCamelCase(entityName)
   const upperCase = CaseTransformer.toUpperCase(entityName)
   const humanReadable = CaseTransformer.toHumanReadable(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${camelCase}.label.plural`,
     value: `${CaseTransformer.toHumanReadable(toPlural(entityName))}`,
   })
 
-  addTranslation({
+  await addTranslation({
     key: `module.${camelCase}.create`,
     value: `Create ${humanReadable}`,
   })

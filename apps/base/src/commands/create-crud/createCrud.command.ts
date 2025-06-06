@@ -16,8 +16,6 @@ import { createCrudUuid } from './uuid/createCrudUuid'
 export async function createCrudCommand() {
   const logger = getLogger()
 
-  logger.info(`Creating new entity}`)
-
   const entityName = CaseTransformer.toCamelCase(await getInputString({
     title: 'Create new CRUD',
     prompt: 'Enter the name of the new entity (in singular)',

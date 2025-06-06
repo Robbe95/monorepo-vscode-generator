@@ -3,11 +3,11 @@ import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getDetailViewTemplate({
+export async function getDetailViewTemplate({
   entityName,
 }: {
   entityName: string
-}): string {
+}) {
   const kebabCase = CaseTransformer.toKebabCase(entityName)
   const camelCase = CaseTransformer.toCamelCase(entityName)
   const snakeCase = CaseTransformer.toSnakeCase(entityName)
@@ -15,22 +15,22 @@ export function getDetailViewTemplate({
   const pascalCase = CaseTransformer.toPascalCase(entityName)
   const humanReadable = CaseTransformer.toHumanReadable(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${snakeCase}.unknown`,
     value: `Unknown ${humanReadable}`,
   })
 
-  addTranslation({
+  await addTranslation({
     key: `module.${snakeCase}.detail_title`,
     value: `${humanReadable} detail`,
   })
 
-  addTranslation({
+  await addTranslation({
     key: `module.${snakeCase}.uuid`,
     value: `${humanReadable} UUID`,
   })
 
-  addTranslation({
+  await addTranslation({
     key: `module.${snakeCase}.detail.edit_${snakeCase}`,
     value: `Edit ${humanReadable}`,
   })

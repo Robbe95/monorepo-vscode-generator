@@ -1,10 +1,10 @@
 import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getUpdateViewTemplate(entityName: string) {
+export async function getUpdateViewTemplate(entityName: string) {
   const entityCasing = allCases(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${entityCasing.snakeCase}.update.title`,
     value: `Update ${entityCasing.humanReadable}`,
   })

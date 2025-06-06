@@ -3,7 +3,7 @@ import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export function getIndexTableTemplate(entityName: string): string {
+export async function getIndexTableTemplate(entityName: string) {
   const kebabCase = CaseTransformer.toKebabCase(entityName)
   const pascalCase = CaseTransformer.toPascalCase(entityName)
   const camelCase = CaseTransformer.toCamelCase(entityName)
@@ -11,7 +11,7 @@ export function getIndexTableTemplate(entityName: string): string {
   const snakeCase = CaseTransformer.toSnakeCase(entityName)
   const humanReadable = CaseTransformer.toHumanReadable(entityName)
 
-  addTranslation({
+  await addTranslation({
     key: `module.${snakeCase}.uuid`,
     value: `${humanReadable} UUID`,
   })

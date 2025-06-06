@@ -132,7 +132,7 @@ async function addToRoutesIndex({
   entityName,
 }: { entityName: string }) {
   const routesSourceFile = await getTsSourceFile({
-    filePath: `src/routes/routes.ts`,
+    filePath: `./src/routes/routes.ts`,
     projectPath: BASE_PATH,
   })
 
