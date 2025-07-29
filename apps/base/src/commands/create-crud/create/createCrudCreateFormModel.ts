@@ -28,15 +28,15 @@ export async function createCrudCreateFormModel({
       ],
     })
     .addImport({
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
       namedImports: [
         `${entityCasings.camelCase}UuidSchema`,
       ],
     })
     .addVariable({
       isExported: true,
-      name: `${entityName}CreateFormSchema`,
-      comment: `// TODO Update z.object to the correct schema for ${entityName}CreateForm`,
+      name: `${entityCasings.camelCase}CreateFormSchema`,
+      comment: `// TODO Update z.object to the correct schema for ${entityCasings.camelCase}CreateForm`,
       initializer: `z.object({
       uuid: ${entityCasings.camelCase}UuidSchema,
     })`,
@@ -44,7 +44,7 @@ export async function createCrudCreateFormModel({
     .addType({
       isExported: true,
       name: `${entityCasings.pascalCase}CreateForm`,
-      type: `z.infer<typeof ${entityName}CreateFormSchema>`,
+      type: `z.infer<typeof ${entityCasings.camelCase}CreateFormSchema>`,
     })
     .save()
 }
