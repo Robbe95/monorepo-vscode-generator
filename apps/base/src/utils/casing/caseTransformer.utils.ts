@@ -78,3 +78,14 @@ export function allCases(str: string) {
     upperCase: CaseTransformer.toUpperCase(str),
   } as const
 }
+
+export function getCases(str: string) {
+  return {
+    camelCase: CaseTransformer.toCamelCase(str),
+    humanReadable: CaseTransformer.toHumanReadable(str),
+    kebabCase: CaseTransformer.toKebabCase(str),
+    pascalCase: CaseTransformer.toPascalCase(str),
+    snakeCase: CaseTransformer.toSnakeCase(str),
+    upperCase: CaseTransformer.toUpperCase(str),
+  } as const
+}

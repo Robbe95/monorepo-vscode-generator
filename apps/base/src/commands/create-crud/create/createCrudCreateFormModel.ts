@@ -1,5 +1,5 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import type { CreateCrudCreateParams } from './createCrudCreate'
@@ -18,6 +18,8 @@ export async function createCrudCreateFormModel({
     path,
   })
 
+  const entityCasings = getCases(entityName)
+
   fileManipulator
     .addImport({
       moduleSpecifier: `zod`,
@@ -26,9 +28,9 @@ export async function createCrudCreateFormModel({
       ],
     })
     .addImport({
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityName}Uuid.model.ts`,
       namedImports: [
-        `${CaseTransformer.toCamelCase(entityName)}UuidSchema`,
+        `${entityCasings.camelCase}UuidSchema`,
       ],
     })
     .addVariable({
@@ -36,12 +38,12 @@ export async function createCrudCreateFormModel({
       name: `${entityName}CreateFormSchema`,
       comment: `// TODO Update z.object to the correct schema for ${entityName}CreateForm`,
       initializer: `z.object({
-      uuid: ${CaseTransformer.toCamelCase(entityName)}UuidSchema,
+      uuid: ${entityCasings.camelCase}UuidSchema,
     })`,
     })
     .addType({
       isExported: true,
-      name: `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+      name: `${entityCasings.pascalCase}CreateForm`,
       type: `z.infer<typeof ${entityName}CreateFormSchema>`,
     })
     .save()

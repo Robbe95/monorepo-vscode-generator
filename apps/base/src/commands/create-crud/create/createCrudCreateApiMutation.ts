@@ -1,6 +1,6 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import { getCreateCrudCreateApiMutationFile } from './createCrudCreate.files'
@@ -25,6 +25,7 @@ async function createMutationFile(entityName: string) {
     projectPath: BASE_PATH,
     path,
   })
+  const entityCasings = getCases(entityName)
 
   fileManipulator
     .addImport({
@@ -42,35 +43,35 @@ async function createMutationFile(entityName: string) {
     })
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/create/${entityName}CreateForm.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}CreateForm.model.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+        `${entityCasings.pascalCase}CreateForm`,
       ],
     })
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+        `${entityCasings.pascalCase}Uuid`,
       ],
     })
     .addImport({
-      moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}/api/services/${CaseTransformer.toKebabCase(entityName)}.service.ts`,
+      moduleSpecifier: `@/modules/${entityCasings.kebabCase}/api/services/${entityCasings.kebabCase}.service.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Service`,
+        `${entityCasings.pascalCase}Service`,
       ],
     })
     .addFunction({
       isExported: true,
-      name: `use${CaseTransformer.toPascalCase(entityName)}CreateMutation`,
+      name: `use${entityCasings.pascalCase}CreateMutation`,
       parameters: [],
       statements: [
         `return useMutation({
         queryFn: async ({ body }) => {
-          return await ${CaseTransformer.toPascalCase(entityName)}Service.create(body)
+          return await ${entityCasings.pascalCase}Service.create(body)
         },
         queryKeysToInvalidate: {
-          ${CaseTransformer.toKebabCase(entityName)}Index: {},
+          ${entityCasings.kebabCase}Index: {},
         },
       })`,
       ],
@@ -88,45 +89,46 @@ async function addToServiceFile(entityName: string) {
     projectPath: BASE_PATH,
     path,
   })
+  const entityCasings = getCases(entityName)
 
   fileManipulator
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/create/${entityName}CreateForm.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}CreateForm.model.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+        `${entityCasings.pascalCase}CreateForm`,
       ],
     })
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+        `${entityCasings.pascalCase}Uuid`,
       ],
     })
     .addImport({
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/create/${entityName}Create.transformer.ts`,
+      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}Create.transformer.ts`,
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}CreateTransformer`,
+        `${entityCasings.pascalCase}CreateTransformer`,
       ],
     })
     .addClass({
       isExported: true,
-      name: `${CaseTransformer.toPascalCase(entityName)}Service`,
+      name: `${entityCasings.pascalCase}Service`,
     })
     .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `create`,
-      comment: `// TODO Implement the logic to create a new ${CaseTransformer.toPascalCase(entityName)} item.`,
-      nameClass: `${CaseTransformer.toPascalCase(entityName)}Service`,
+      comment: `// TODO Implement the logic to create a new ${entityCasings.pascalCase} item.`,
+      nameClass: `${entityCasings.pascalCase}Service`,
       parameters: [
         {
           name: 'form',
-          type: `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+          type: `${entityCasings.pascalCase}CreateForm`,
         },
       ],
-      returnType: `Promise<${CaseTransformer.toPascalCase(entityName)}Uuid>`,
+      returnType: `Promise<${entityCasings.pascalCase}Uuid>`,
       statements: [],
     })
     .save()
