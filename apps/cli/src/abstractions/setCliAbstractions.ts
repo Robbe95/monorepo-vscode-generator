@@ -14,7 +14,7 @@ import {
 } from '@repo/base'
 import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils.ts'
 
-export function setCliAbsctractions() {
+export function setCliAbstractions() {
   setLoggerExtraction(cliLogger())
   setGetInputStringAbstraction(cliGetInputString)
   setGetInputSelectAbstraction(cliGetInputSelect)

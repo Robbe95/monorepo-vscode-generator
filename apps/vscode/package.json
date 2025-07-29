@@ -2,7 +2,7 @@
   "publisher": "robbe95",
   "name": "wisemen-code-generator",
   "displayName": "wisemen-code-generator",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "packageManager": "pnpm@10.11.0",
   "description": "",

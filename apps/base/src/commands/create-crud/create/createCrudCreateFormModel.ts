@@ -1,10 +1,6 @@
-import { VariableDeclarationKind } from 'ts-morph'
-
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import type { CreateCrudCreateParams } from './createCrudCreate'
 import { getCreateCrudCreateFormModelFile } from './createCrudCreate.files'
@@ -16,56 +12,37 @@ export async function createCrudCreateFormModel({
     name, path,
   } = getCreateCrudCreateFormModelFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  fileManipulator
+    .addImport({
+      moduleSpecifier: `zod`,
+      namedImports: [
+        `z`,
+      ],
     })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `zod`,
-    namedImports: [
-      `z`,
-    ],
-  })
-
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toCamelCase(entityName)}UuidSchema`,
-    ],
-  })
-
-  sourceFile.addVariableStatement({
-    isExported: true,
-    declarationKind: VariableDeclarationKind.Const,
-    declarations: [
-      {
-        name: `${entityName}CreateFormSchema`,
-        initializer: `z.object({
-          uuid: ${CaseTransformer.toCamelCase(entityName)}UuidSchema,
-        })`,
-      },
-    ],
-    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}CreateForm`,
-  })
-
-  sourceFile.addTypeAlias({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
-    type: `z.infer<typeof ${entityName}CreateFormSchema>`,
-  })
-
-  await sourceFile.save()
+    .addImport({
+      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      namedImports: [
+        `${CaseTransformer.toCamelCase(entityName)}UuidSchema`,
+      ],
+    })
+    .addVariable({
+      isExported: true,
+      name: `${entityName}CreateFormSchema`,
+      comment: `// TODO Update z.object to the correct schema for ${entityName}CreateForm`,
+      initializer: `z.object({
+      uuid: ${CaseTransformer.toCamelCase(entityName)}UuidSchema,
+    })`,
+    })
+    .addType({
+      isExported: true,
+      name: `${CaseTransformer.toPascalCase(entityName)}CreateForm`,
+      type: `z.infer<typeof ${entityName}CreateFormSchema>`,
+    })
+    .save()
 }

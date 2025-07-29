@@ -1,6 +1,3 @@
-import { exec } from 'node:child_process'
-import { promisify } from 'node:util'
-
 // import * as vscode from 'vscode' // Import vscode module
 
 // const execPromise = promisify(exec)

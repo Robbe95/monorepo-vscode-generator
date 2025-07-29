@@ -1,0 +1,5 @@
+{
+  "languageFileLocation": "./src/locales/en-US.json",
+  "queryFileKeyLocation": "./src/types/queryKey.type.ts",
+  "routerFileLocation": "./src/routes/routes.ts"
+}

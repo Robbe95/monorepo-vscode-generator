@@ -13,6 +13,7 @@ import {
   DEFAULT_LANGUAGE_FILE_LOCATION,
   DEFAULT_QUERY_FILE_KEY_LOCATION,
   DEFAULT_ROUTER_FILE_LOCATION,
+  DEFAULT_TS_CONFIG_FILE_NAME,
 } from './configShape'
 import { createInitialConfig } from './setupConfig'
 
@@ -32,6 +33,7 @@ export async function getConfig(): Promise<ConfigFile> {
     languageFileLocation: await getLanguageFileLocation(configObject),
     queryFileKeyLocation: await getQueryFileKeyLocation(configObject),
     routerFileLocation: await getRouterFileLocation(configObject),
+    tsConfigFileName: await getTsConfigFileName(configObject),
   }
 
   return config
@@ -108,6 +110,25 @@ async function getRouterFileLocation(configObject: Record<string, string>): Prom
   await writeToConfigFile(configObject)
 
   return configObject.routerFileLocation
+}
+
+async function getTsConfigFileName(configObject: Record<string, string>): Promise<string> {
+  const existingTsConfigFileName = getValue(configObject, 'tsConfigFileName')
+
+  if (existingTsConfigFileName) {
+    return existingTsConfigFileName
+  }
+  const tsConfigFileName = await getInputString({
+    title: 'TSConfig file name',
+    canBeEmpty: true,
+    prompt: `Where is the TSConfig file name? (default: '${DEFAULT_TS_CONFIG_FILE_NAME}')`,
+  })
+
+  configObject.tsConfigFileName = !tsConfigFileName || tsConfigFileName === '' ? DEFAULT_TS_CONFIG_FILE_NAME : tsConfigFileName
+  await getLogger().info(`TSConfig file name set to: ${configObject.tsConfigFileName}`)
+  await writeToConfigFile(configObject)
+
+  return configObject.tsConfigFileName
 }
 
 async function writeToConfigFile(
