@@ -1,10 +1,10 @@
+import { getCreateCrudUuidModelFile } from 'src/commands/create-crud/uuid/createCrudUuid.files'
+
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
-import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
+import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import { getCreateCrudDeleteApiMutationFile } from './createCrudDelete.files'
 
@@ -14,87 +14,70 @@ interface CreateCrudDeleteApiMutationOptions {
 export async function createCrudDeleteApiMutation({
   entityName,
 }: CreateCrudDeleteApiMutationOptions) {
-  await addToServiceFile(entityName)
   await createMutationFile(entityName)
+  await addToServiceFile(entityName)
 }
 
 async function createMutationFile(entityName: string) {
   const {
     name, path,
   } = getCreateCrudDeleteApiMutationFile(entityName)
-  const sourceFileResponse = await tryCatch(createEmptyFile ({
+
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
-    })
+  const entityCasings = allCases(entityName)
 
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclarations([
-    {
-      isTypeOnly: true,
-      moduleSpecifier: `@wisemen/vue-core-query`,
-      namedImports: [
-        'UseMutationReturnType',
-      ],
-    },
-    {
+  fileManipulator
+    .addImport({
       moduleSpecifier: `@wisemen/vue-core-query`,
       namedImports: [
         'useMutation',
       ],
-    },
-    {
+    })
+    .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+        `${entityCasings.pascalCase}Uuid`,
       ],
-    },
-    {
-      moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}/api/services/${CaseTransformer.toKebabCase(entityName)}.service.ts`,
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Service`,
+        `${entityCasings.pascalCase}Service`,
       ],
-    },
-  ])
-
-  sourceFile.addInterface({
-    name: 'Params',
-    properties: [
-      {
-        name: `${CaseTransformer.toCamelCase(entityName)}Uuid`,
-        type: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
-      },
-    ],
-  })
-  sourceFile.addFunction({
-    isExported: true,
-    name: `use${CaseTransformer.toPascalCase(entityName)}DeleteMutation`,
-    parameters: [],
-    returnType: `UseMutationReturnType<void, void, Params>`,
-    statements: [
-      `return useMutation<void, void, Params>({
-        queryFn: async ({ params }) => {
-          await ${CaseTransformer.toPascalCase(entityName)}Service.delete(params.${CaseTransformer.toCamelCase(entityName)}Uuid)
+    })
+    .addInterface({
+      name: `${entityCasings.pascalCase}DeleteMutationParams`,
+      properties: [
+        {
+          name: `${entityCasings.camelCase}Uuid`,
+          type: `${entityCasings.pascalCase}Uuid`,
         },
-        queryKeysToInvalidate: {
-          ${CaseTransformer.toKebabCase(entityName)}Index: {},
-        },
-      })`,
-    ],
-  })
-
-  sourceFile.saveSync()
+      ],
+    })
+    .addFunction({
+      isExported: true,
+      name: `use${entityCasings.pascalCase}DeleteMutation`,
+      parameters: [],
+      statements: [
+        `
+          return useMutation({
+            queryFn: async (queryOptions: { params: ${entityCasings.pascalCase}DeleteMutationParams }) => {
+              return await ${entityCasings.pascalCase}Service.delete(queryOptions.params.${entityCasings.camelCase}Uuid)
+            },
+            queryKeysToInvalidate: {
+              ${entityCasings.camelCase}Index: {},
+            },
+          })
+        `,
+      ],
+    })
+    .save()
 }
 
 async function addToServiceFile(entityName: string) {
@@ -102,42 +85,35 @@ async function addToServiceFile(entityName: string) {
     name, path,
   } = getCreateCrudServiceFile(entityName)
 
-  const serviceSourceFile = await getTsSourceFile({
-    filePath: `${path}/${name}`,
+  const fileManipulator = await FileManipulator.create({
+    name,
     projectPath: BASE_PATH,
+    path,
   })
+  const entityCasings = allCases(entityName)
 
-  const existingMethod = serviceSourceFile.getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`).getMethod('delete')
-
-  if (existingMethod) {
-    return
-  }
-
-  serviceSourceFile.addImportDeclarations([
-    {
+  fileManipulator
+    .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+        `${entityCasings.pascalCase}Uuid`,
       ],
-    },
-  ])
-
-  serviceSourceFile.getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
-    .addMethod({
+    })
+    .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `delete`,
-      leadingTrivia: `// TODO Implement the logic to delete a ${CaseTransformer.toPascalCase(entityName)} item.`,
+      comment: `// TODO Implement the logic to delete a ${entityCasings.pascalCase} item.`,
+      nameClass: `${entityCasings.pascalCase}Service`,
       parameters: [
         {
-          name: `${CaseTransformer.toCamelCase(entityName)}Uuid`,
-          type: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+          name: `${entityCasings.camelCase}Uuid`,
+          type: `${entityCasings.pascalCase}Uuid`,
         },
       ],
       returnType: `Promise<void>`,
       statements: [],
     })
-
-  serviceSourceFile.saveSync()
+    .save()
 }
