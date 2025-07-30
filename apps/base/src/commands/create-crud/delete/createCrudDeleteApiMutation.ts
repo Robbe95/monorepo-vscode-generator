@@ -1,6 +1,5 @@
-import { getCreateCrudUuidModelFile } from 'src/commands/create-crud/uuid/createCrudUuid.files'
-
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
