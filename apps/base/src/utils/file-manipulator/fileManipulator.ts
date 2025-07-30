@@ -9,6 +9,8 @@ import type { ManipulateClassOptions } from './manipulations/manipulateClass'
 import { manipulateClass } from './manipulations/manipulateClass'
 import type { ManipulateClassMethodOptions } from './manipulations/manipulateClassMethod'
 import { manipulateClassMethod } from './manipulations/manipulateClassMethod'
+import type { ManipulateExportOptions } from './manipulations/manipulateExport'
+import { manipulateExport } from './manipulations/manipulateExport'
 import type { ManipulateFunctionOptions } from './manipulations/manipulateFunction'
 import { manipulateFunction } from './manipulations/manipulateFunction'
 import type { ManipulateImportOptions } from './manipulations/manipulateImport'
@@ -100,6 +102,15 @@ export class FileManipulator {
 
   addClassMethod(options: Omit<ManipulateClassMethodOptions, 'file'> & { nameClass: string }) {
     this.file = manipulateClassMethod({
+      ...options,
+      file: this.file,
+    })
+
+    return this
+  }
+
+  addExport(options: Omit<ManipulateExportOptions, 'file'>) {
+    this.file = manipulateExport({
       ...options,
       file: this.file,
     })

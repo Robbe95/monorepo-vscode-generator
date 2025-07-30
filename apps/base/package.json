@@ -3,7 +3,6 @@
   "name": "@repo/base",
   "displayName": "monorepo-code-generator",
   "type": "module",
-  "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "description": "",
@@ -12,10 +11,6 @@
     "email": "robbevaes95@gmail.com"
   },
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Robbe95/monorepo-vscode-generator"
-  },
   "categories": [
     "Other"
   ],
@@ -26,13 +21,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsdown src/index.ts",
-    "dev": "tsdown src/index.ts",
-    "meta": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "release": "bumpp && pnpm publish"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@antfu/ni": "catalog:monorepo",

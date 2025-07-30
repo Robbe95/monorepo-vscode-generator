@@ -11,10 +11,5 @@ export default defineConfig({
   format: [
     'cjs',
   ],
-
   shims: false,
-  // watch: [
-  //   'src/**/*.ts',
-  //   '../base/src/**/*.ts',
-  // ],
 })

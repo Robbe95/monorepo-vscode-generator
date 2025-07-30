@@ -1,15 +1,12 @@
-import {
-  SyntaxKind,
-  VariableDeclarationKind,
-} from 'ts-morph'
+import { SyntaxKind } from 'ts-morph'
 
+import { createCrudModuleAddExport } from '#commands/create-crud/module/createCrudModuleAddExport.ts'
 import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 import { getCreateCrudRoutesFile } from './createCrudRoutes.files'
@@ -17,6 +14,7 @@ import { getCreateCrudRoutesFile } from './createCrudRoutes.files'
 type RouteOption = 'create' | 'delete' | 'detail' | 'index' | 'update'
 interface CreateCrudRoutesOptions {
   entityName: string
+
   routes: RouteOption[]
 }
 
@@ -70,45 +68,31 @@ export async function createCrudRoutes({
 
   const filteredRoutes = routes.filter((route) => route !== 'delete')
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
+    projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  fileManipulator
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: 'vue',
+      namedImports: [
+        'Component',
+      ],
     })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: 'vue',
-    namedImports: [
-      'Component',
-    ],
-  })
-
-  sourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: 'vue-router',
-    namedImports: [
-      'RouteRecordRaw',
-    ],
-  })
-
-  sourceFile.addVariableStatement({
-    isExported: true,
-    declarationKind: VariableDeclarationKind.Const,
-    declarations: [
-      {
-        name: `${entityName}Routes`,
-        initializer: `[
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: 'vue-router',
+      namedImports: [
+        'RouteRecordRaw',
+      ],
+    })
+    .addVariable({
+      isExported: true,
+      name: `${entityName}Routes`,
+      initializer: `[
           {
             path: '/${CaseTransformer.toKebabCase(toPlural(entityName))}',
             children: [
@@ -119,12 +103,13 @@ export async function createCrudRoutes({
             ],
           }
         ] as const satisfies RouteRecordRaw[]`,
-      },
-    ],
-  })
+    })
+    .save()
 
-  await sourceFile.save()
   await addToRoutesIndex({
+    entityName: `${entityName}`,
+  })
+  addRoutesToModuleExport({
     entityName: `${entityName}`,
   })
 }
@@ -139,7 +124,7 @@ async function addToRoutesIndex({
   })
 
   routesSourceFile.addImportDeclaration({
-    moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}/routes/${CaseTransformer.toKebabCase(entityName)}.routes.ts`,
+    moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}`,
     namedImports: [
       `${entityName}Routes`,
     ],
@@ -176,7 +161,22 @@ async function addToRoutesIndex({
     return
   }
 
-  routesArray.addElement(`...${entityName}Routes,`)
+  routesArray
+    .addElement(`...${entityName}Routes,`)
 
   routesSourceFile.saveSync()
+}
+
+function addRoutesToModuleExport({
+  entityName,
+}: { entityName: string }) {
+  const routesFile = getCreateCrudRoutesFile(entityName)
+
+  createCrudModuleAddExport({
+    entityName,
+    moduleSpecifier: toFileAlias(routesFile),
+    namedExports: [
+      `${entityName}Routes`,
+    ],
+  })
 }

@@ -1,10 +1,6 @@
-import { VariableDeclarationKind } from 'ts-morph'
-
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import { getCreateCrudUuidModelFile } from './createCrudUuid.files'
 
@@ -19,46 +15,28 @@ export async function createCrudUuid({
     name, path,
   } = getCreateCrudUuidModelFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  fileManipulator
+    .addImport({
+      moduleSpecifier: 'zod',
+      namedImports: [
+        'z',
+      ],
     })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: 'zod',
-    namedImports: [
-      'z',
-    ],
-  })
-
-  sourceFile.addVariableStatement({
-    isExported: true,
-    declarationKind: VariableDeclarationKind.Const,
-    declarations: [
-      {
-        name: `${entityName}UuidSchema`,
-        initializer: `z.string().uuid().brand('${entityName}Uuid')`,
-      },
-    ],
-  })
-
-  sourceFile.addTypeAlias({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
-    type: `z.infer<typeof ${entityName}UuidSchema>`,
-  })
-
-  await sourceFile.save()
+    .addVariable({
+      isExported: true,
+      name: `${entityName}UuidSchema`,
+      initializer: `z.string().uuid().brand('${entityName}Uuid')`,
+    })
+    .addType({
+      isExported: true,
+      name: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+      type: `z.infer<typeof ${entityName}UuidSchema>`,
+    })
+    .save()
 }

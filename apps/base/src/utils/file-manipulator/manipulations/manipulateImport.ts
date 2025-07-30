@@ -17,8 +17,9 @@ export function manipulateImport({
 }: ManipulateImportOptions) {
   // check if the import already exists and if the named imports are already present
   const existingImport = file.getImportDeclaration(moduleSpecifier)
+  const isTypeIsMatching = existingImport?.isTypeOnly() === isTypeOnly
 
-  if (existingImport) {
+  if (existingImport && isTypeIsMatching) {
     const existingNamedImports = new Set(existingImport.getNamedImports().map((namedImport) => namedImport.getName()))
     const hasExistingNamedImports = namedImports.every((namedImport) => existingNamedImports.has(namedImport))
 

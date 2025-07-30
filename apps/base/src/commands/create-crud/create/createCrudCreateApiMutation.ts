@@ -1,9 +1,15 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
-import { getCreateCrudCreateApiMutationFile } from './createCrudCreate.files'
+import {
+  getCreateCrudCreateApiMutationFile,
+  getCreateCrudCreateFormModelFile,
+  getCreateCrudCreateTransformerFile,
+} from './createCrudCreate.files'
 
 interface CreateCrudCreateApiMutationOptions {
   entityName: string
@@ -26,15 +32,10 @@ async function createMutationFile(entityName: string) {
     path,
   })
   const entityCasings = getCases(entityName)
+  const uuidFile = getCreateCrudUuidModelFile(entityName)
+  const serviceFile = getCreateCrudServiceFile(entityName)
 
   fileManipulator
-    .addImport({
-      isTypeOnly: true,
-      moduleSpecifier: `@wisemen/vue-core-query`,
-      namedImports: [
-        'UseMutationReturnType',
-      ],
-    })
     .addImport({
       moduleSpecifier: `@wisemen/vue-core-query`,
       namedImports: [
@@ -43,22 +44,26 @@ async function createMutationFile(entityName: string) {
     })
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}CreateForm.model.ts`,
-      namedImports: [
-        `${entityCasings.pascalCase}CreateForm`,
-      ],
-    })
-    .addImport({
-      isTypeOnly: true,
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(uuidFile),
       namedImports: [
         `${entityCasings.pascalCase}Uuid`,
       ],
     })
     .addImport({
-      moduleSpecifier: `@/modules/${entityCasings.kebabCase}/api/services/${entityCasings.kebabCase}.service.ts`,
+      moduleSpecifier: toFileAlias(serviceFile),
       namedImports: [
         `${entityCasings.pascalCase}Service`,
+      ],
+    })
+    .addInterface({
+      name: `${entityCasings.pascalCase}CreateMutationOptions`,
+      properties: [
+        {
+          name: 'body',
+          type: `{ 
+            uuid: ${entityCasings.pascalCase}Uuid 
+          }`,
+        },
       ],
     })
     .addFunction({
@@ -67,7 +72,7 @@ async function createMutationFile(entityName: string) {
       parameters: [],
       statements: [
         `return useMutation({
-        queryFn: async ({ body }) => {
+        queryFn: async ({ body }: ${entityCasings.pascalCase}CreateMutationOptions) => {
           return await ${entityCasings.pascalCase}Service.create(body)
         },
         queryKeysToInvalidate: {
@@ -90,24 +95,40 @@ async function addToServiceFile(entityName: string) {
     path,
   })
   const entityCasings = getCases(entityName)
+  const createFormFile = getCreateCrudCreateFormModelFile(entityName)
+  const uuidFile = getCreateCrudUuidModelFile(entityName)
+  const transformerFile = getCreateCrudCreateTransformerFile(entityName)
 
   fileManipulator
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}CreateForm.model.ts`,
+      moduleSpecifier: 'neverthrow',
+      namedImports: [
+        'Result',
+      ],
+    })
+    .addImport({
+      moduleSpecifier: 'neverthrow',
+      namedImports: [
+        'ResultAsync',
+      ],
+    })
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(createFormFile),
       namedImports: [
         `${entityCasings.pascalCase}CreateForm`,
       ],
     })
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(uuidFile),
       namedImports: [
         `${entityCasings.pascalCase}Uuid`,
       ],
     })
     .addImport({
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityCasings.camelCase}Create.transformer.ts`,
+      moduleSpecifier: toFileAlias(transformerFile),
       namedImports: [
         `${entityCasings.pascalCase}CreateTransformer`,
       ],
@@ -128,8 +149,16 @@ async function addToServiceFile(entityName: string) {
           type: `${entityCasings.pascalCase}CreateForm`,
         },
       ],
-      returnType: `Promise<${entityCasings.pascalCase}Uuid>`,
-      statements: [],
+      returnType: `Promise<Result<${entityCasings.pascalCase}Uuid, Error>>`,
+      statements: [
+        `  
+            const dto = ${entityCasings.pascalCase}CreateTransformer.toDto(form)
+            const response = await ResultAsync.fromPromise(create${entityCasings.pascalCase}V1({
+              body: dto,
+            }), () => new Error('Failed to create ${entityCasings.humanReadable}'))
+            return response.map((res) => res.data.uuid as ${entityCasings.pascalCase}Uuid)
+        `,
+      ],
     })
     .save()
 }

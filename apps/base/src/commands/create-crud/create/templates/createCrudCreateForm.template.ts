@@ -1,10 +1,49 @@
+import {
+  getCreateCrudCreateApiMutationFile,
+  getCreateCrudCreateFormModelFile,
+} from '#commands/create-crud/create/createCrudCreate.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
 export async function getCreateCrudCreateFormTemplate(entityName: string) {
   const entityCasing = allCases(entityName)
+  const createFormModelFile = getCreateCrudCreateFormModelFile(entityName)
+  const uuidFile = getCreateCrudUuidModelFile(entityName)
+  const mutationFile = getCreateCrudCreateApiMutationFile(entityName)
+
+  const createFormSchemaImport = toTsImport({
+    ...createFormModelFile,
+    methodNames: [
+      `${entityCasing.camelCase}CreateFormSchema`,
+    ],
+  })
+
+  const mutationImport = toTsImport({
+    ...mutationFile,
+    methodNames: [
+      `use${entityCasing.pascalCase}CreateMutation`,
+    ],
+  })
+
+  const uuidImport = toTsImport({
+    ...uuidFile,
+    isType: true,
+    methodNames: [
+      `${entityCasing.pascalCase}Uuid`,
+    ],
+  })
+
+  const createFormImport = toTsImport({
+    ...createFormModelFile,
+    isType: true,
+    methodNames: [
+      `${entityCasing.pascalCase}CreateForm`,
+    ],
+  })
 
   await addTranslation({
     key: `module.${entityCasing.snakeCase}.create.title`,
@@ -30,18 +69,17 @@ import { useForm } from 'formango'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import FormGrid from '@/components/app/grid/FormGrid.vue'
 import AppTeleport from '@/components/app/teleport/AppTeleport.vue'
-import AppForm from '@/components/form/AppForm.vue'
+import FormRoot from '@/components/form/FormRoot.vue'
 import FormFieldset from '@/components/form/FormFieldset.vue'
 import FormLayout from '@/components/form/FormLayout.vue'
 import FormSubmitButton from '@/components/form/FormSubmitButton.vue'
 import { useApiErrorToast } from '@/composables/api-error-toast/apiErrorToast.composable'
 import { TEST_ID } from '@/constants/testId.constant'
-import type { ${entityCasing.pascalCase}CreateForm } from '@/models/${entityCasing.kebabCase}/create/${entityCasing.camelCase}CreateForm.model'
-import { ${entityCasing.camelCase}CreateFormSchema } from '@/models/${entityCasing.kebabCase}/create/${entityCasing.camelCase}CreateForm.model'
-import { use${entityCasing.pascalCase}CreateMutation } from '@/modules/${entityCasing.kebabCase}/api/mutations/${entityCasing.camelCase}Create.mutation'
-import type { ${entityCasing.pascalCase}Uuid } from '@/models/${entityCasing.kebabCase}/${entityCasing.camelCase}Uuid.model'
+${createFormSchemaImport}
+${mutationImport}
+${uuidImport}
+${createFormImport}
 import { toFormField } from '@/utils/formango.util'
 
 const i18n = useI18n()
@@ -84,7 +122,7 @@ const uuid = form.register('uuid')
 </script>
 
 <template>
-  <AppForm :form="form">
+  <FormRoot :form="form">
     <template #default="{ formId }">
       <AppTeleport to="headerActions">
         <FormSubmitButton
@@ -97,16 +135,14 @@ const uuid = form.register('uuid')
 
       <FormLayout>
         <FormFieldset :title="i18n.t('module.${entityCasing.snakeCase}.info')">
-          <FormGrid :cols="2">
-            <VcTextField
-              v-bind="toFormField(uuid)"
-              :label="i18n.t('module.${entityCasing.snakeCase}.uuid')"
-            />
-          </FormGrid>
+          <VcTextField
+            v-bind="toFormField(uuid)"
+            :label="i18n.t('module.${entityCasing.snakeCase}.uuid')"
+          />
         </FormFieldset>
       </FormLayout>
     </template>
-  </AppForm>
+  </FormRoot>
 </template>
 
 `

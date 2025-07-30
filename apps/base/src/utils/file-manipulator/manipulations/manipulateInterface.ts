@@ -3,6 +3,7 @@ import type { SourceFile } from 'ts-morph'
 import { getLogger } from '#utils/logger/logger.utils.ts'
 
 export interface ManipulateInterfaceOptions {
+  isExported?: boolean
   name: string
   comment?: string
   file: SourceFile
@@ -13,6 +14,7 @@ export interface ManipulateInterfaceOptions {
 }
 
 export function manipulateInterface({
+  isExported,
   name,
   comment,
   file,
@@ -27,6 +29,7 @@ export function manipulateInterface({
   }
 
   file.addInterface({
+    isExported,
     name,
     leadingTrivia: comment,
     properties,

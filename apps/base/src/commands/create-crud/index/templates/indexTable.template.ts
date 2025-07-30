@@ -1,15 +1,17 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
 export async function getIndexTableTemplate(entityName: string) {
-  const kebabCase = CaseTransformer.toKebabCase(entityName)
-  const pascalCase = CaseTransformer.toPascalCase(entityName)
-  const camelCase = CaseTransformer.toCamelCase(entityName)
-  const upperCase = CaseTransformer.toUpperCase(entityName)
-  const snakeCase = CaseTransformer.toSnakeCase(entityName)
-  const humanReadable = CaseTransformer.toHumanReadable(entityName)
+  const {
+    camelCase,
+    humanReadable,
+    kebabCase,
+    pascalCase,
+    snakeCase,
+    upperCase,
+  } = allCases(entityName)
 
   await addTranslation({
     key: `module.${snakeCase}.uuid`,

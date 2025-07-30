@@ -1,11 +1,14 @@
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudIndexParams } from './createCrudIndex'
-import { getCreateCrudIndexTransformerFile } from './createCrudIndex.files'
+import {
+  getCreateCrudIndexModelFile,
+  getCreateCrudIndexTransformerFile,
+} from './createCrudIndex.files'
 
 export async function createCrudIndexTransformer({
   entityName,
@@ -14,64 +17,47 @@ export async function createCrudIndexTransformer({
     name, path,
   } = getCreateCrudIndexTransformerFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
-    })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclarations([
-    {
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
+  fileManipulator
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
       namedImports: [
         `${CaseTransformer.toPascalCase(entityName)}Index`,
       ],
-    },
-    {
+    })
+    .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
         `${CaseTransformer.toPascalCase(entityName)}Uuid`,
       ],
-    },
-  ])
-
-  sourceFile.addClass({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}IndexTransformer`,
-    methods: [
-      {
-        isStatic: true,
-        name: 'fromDto',
-        parameters: [
-          {
-            name: 'dto',
-            type: `any`,
-          },
-        ],
-        returnType: `${CaseTransformer.toPascalCase(entityName)}Index`,
-        statements: [
-          `
-            return {
-              uuid: dto.uuid as ${CaseTransformer.toPascalCase(entityName)}Uuid,
-              // TODO Transform other properties from dto to ${CaseTransformer.toPascalCase(entityName)}Index
-            }
-          `,
-        ],
-      },
-    ],
-  })
-
-  await sourceFile.save()
+    })
+    .addClass({
+      isExported: true,
+      name: `${CaseTransformer.toPascalCase(entityName)}IndexTransformer`,
+    })
+    .addClassMethod({
+      isStatic: true,
+      name: 'fromDto',
+      nameClass: `${CaseTransformer.toPascalCase(entityName)}IndexTransformer`,
+      parameters: [
+        {
+          name: 'dto',
+          type: `any`,
+        },
+      ],
+      returnType: `${CaseTransformer.toPascalCase(entityName)}Index`,
+      statements: [
+        `return {
+          uuid: dto.uuid as ${CaseTransformer.toPascalCase(entityName)}Uuid,
+          // TODO Transform other properties from dto to ${CaseTransformer.toPascalCase(entityName)}Index
+        }`,
+      ],
+    })
+    .save()
 }

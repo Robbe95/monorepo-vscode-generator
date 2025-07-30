@@ -1,12 +1,14 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
-import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
+import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
-import { getCreateCrudIndexApiQueryFile } from './createCrudIndex.files'
+import {
+  getCreateCrudIndexApiQueryFile,
+  getCreateCrudIndexModelFile,
+  getCreateCrudIndexQueryOptionsModelFile,
+} from './createCrudIndex.files'
 
 export async function createCrudIndexApiQuery({
   entityName,
@@ -22,59 +24,53 @@ async function addToServiceFile(entityName: string) {
     name, path,
   } = getCreateCrudServiceFile(entityName)
 
-  const serviceSourceFile = await getTsSourceFile({
-    filePath: `${path}/${name}`,
+  const fileManipulator = await FileManipulator.create({
+    name,
     projectPath: BASE_PATH,
+    path,
   })
 
-  if (serviceSourceFile
-    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
-    .getMethod('getAll')) {
-    return
-  }
+  const entityCasing = allCases(entityName)
 
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Index`,
-    ],
-  })
-
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: '@wisemen/vue-core-components',
-    namedImports: [
-      'PaginatedData',
-    ],
-  })
-
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}IndexQueryOptions.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions`,
-    ],
-  })
-
-  serviceSourceFile
-    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
-    .addMethod({
+  fileManipulator
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
+      namedImports: [
+        `${entityCasing.pascalCase}Index`,
+      ],
+    })
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: '@wisemen/vue-core-components',
+      namedImports: [
+        'PaginationOptions',
+        'PaginatedData',
+      ],
+    })
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudIndexQueryOptionsModelFile(entityName)),
+      namedImports: [
+        `${entityCasing.pascalCase}IndexQueryOptions`,
+      ],
+    })
+    .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `getAll`,
-      leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Index items.`,
+      comment: `// TODO Implement the logic to fetch all ${entityCasing.pascalCase}Index items.`,
+      nameClass: `${entityCasing.pascalCase}Service`,
       parameters: [
         {
           name: 'paginationOptions',
-          type: `PaginationOptions<${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions>`,
+          type: `PaginationOptions<${entityCasing.pascalCase}IndexQueryOptions>`,
         },
       ],
-      returnType: `Promise<PaginatedData<${CaseTransformer.toPascalCase(entityName)}Index>>`,
+      returnType: `Promise<PaginatedData<${entityCasing.pascalCase}Index>>`,
       statements: [],
     })
-
-  await serviceSourceFile.save()
+    .save()
 }
 
 async function createQueryFile(entityName: string) {
@@ -82,96 +78,79 @@ async function createQueryFile(entityName: string) {
     name, path,
   } = getCreateCrudIndexApiQueryFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile ({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  const entityCasing = allCases(entityName)
+
+  fileManipulator
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: 'vue',
+      namedImports: [
+        'ComputedRef',
+      ],
     })
-
-    return
-  }
-
-  const querySourceFile = sourceFileResponse.data
-
-  querySourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: 'vue',
-    namedImports: [
-      'ComputedRef',
-    ],
-  })
-  querySourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: '@wisemen/vue-core-components',
-    namedImports: [
-      'PaginatedData',
-      'PaginationOptions',
-    ],
-  })
-  querySourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: '@wisemen/vue-core-query',
-    namedImports: [
-      'UseQueryReturnType',
-    ],
-  })
-  querySourceFile.addImportDeclaration({
-    moduleSpecifier: '@wisemen/vue-core-query',
-    namedImports: [
-      'useQuery',
-    ],
-  })
-  querySourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}Index.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Index`,
-    ],
-  })
-
-  querySourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}IndexQueryOptions.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions`,
-    ],
-  })
-
-  querySourceFile.addImportDeclaration({
-    moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}/api/services/${CaseTransformer.toKebabCase(entityName)}.service.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Service`,
-    ],
-  })
-
-  querySourceFile.addFunction({
-    isExported: true,
-    name: `use${CaseTransformer.toPascalCase(entityName)}IndexQuery`,
-    leadingTrivia: `// TODO Implement the logic to fetch all ${CaseTransformer.toPascalCase(entityName)}Index items.`,
-    parameters: [
-      {
-        name: 'paginationOptions',
-        type: `ComputedRef<PaginationOptions<${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions>>`,
-      },
-    ],
-    returnType: `UseQueryReturnType<PaginatedData<${CaseTransformer.toPascalCase(entityName)}Index>>`,
-    statements: [
-      `return useQuery<PaginatedData<${CaseTransformer.toPascalCase(entityName)}Index>>({
-        queryFn: () => {
-          return ${CaseTransformer.toPascalCase(entityName)}Service.getAll(paginationOptions.value)
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: '@wisemen/vue-core-components',
+      namedImports: [
+        'PaginatedData',
+        'PaginationOptions',
+      ],
+    })
+    .addImport({
+      moduleSpecifier: '@wisemen/vue-core-query',
+      namedImports: [
+        'useQuery',
+      ],
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
+      namedImports: [
+        `${entityCasing.pascalCase}Index`,
+      ],
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudIndexQueryOptionsModelFile(entityName)),
+      namedImports: [
+        `${entityCasing.pascalCase}IndexQueryOptions`,
+      ],
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
+      namedImports: [
+        `${entityCasing.pascalCase}Service`,
+      ],
+    })
+    .addFunction({
+      isExported: true,
+      name: `use${entityCasing.pascalCase}IndexQuery`,
+      comment: `// TODO Implement the logic to fetch all ${entityCasing.pascalCase}Index items.`,
+      parameters: [
+        {
+          name: 'paginationOptions',
+          type: `ComputedRef<PaginationOptions<${entityCasing.pascalCase}IndexQueryOptions>>`,
         },
-        queryKey: {
-          ${CaseTransformer.toKebabCase(entityName)}Index: {
-            paginationOptions,
-          },
-        }
-      })`,
-    ],
-  })
 
-  querySourceFile.saveSync()
+      ],
+      statements: [
+        `
+          return useQuery({
+            queryFn: () => {
+              return ${entityCasing.pascalCase}Service.getAll(paginationOptions.value)
+            },
+            queryKey: {
+               ${entityCasing.camelCase}Index: {
+                paginationOptions,
+              },
+            },
+          })
+          `,
+      ],
+    })
+    .save()
 }

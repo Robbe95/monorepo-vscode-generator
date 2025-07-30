@@ -52,8 +52,8 @@
     }
   },
   "scripts": {
-    "build": "tsdown src/index.ts --external vscode",
-    "dev": "pnpm build --watch --sourcemap",
+    "build": "tsdown --config tsdown.config.build.ts",
+    "dev": "tsdown --config tsdown.config.dev.ts",
     "meta": "vscode-ext-gen --output src/generated/meta.ts",
     "lint": "eslint .",
     "vscode:prepublish": "pnpm build",

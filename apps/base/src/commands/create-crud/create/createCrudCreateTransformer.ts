@@ -1,9 +1,13 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudCreateParams } from './createCrudCreate'
-import { getCreateCrudCreateTransformerFile } from './createCrudCreate.files'
+import {
+  getCreateCrudCreateFormModelFile,
+  getCreateCrudCreateTransformerFile,
+} from './createCrudCreate.files'
 
 export async function createCrudCreateTransformer({
   entityName,
@@ -18,11 +22,12 @@ export async function createCrudCreateTransformer({
     path,
   })
   const entityCasings = getCases(entityName)
+  const createFormFile = getCreateCrudCreateFormModelFile(entityName)
 
   fileManipulator
     .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/create/${entityName}CreateForm.model.ts`,
+      moduleSpecifier: toFileAlias(createFormFile),
       namedImports: [
         `${entityCasings.pascalCase}CreateForm`,
       ],

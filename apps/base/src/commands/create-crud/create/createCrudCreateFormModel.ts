@@ -1,6 +1,8 @@
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudCreateParams } from './createCrudCreate'
 import { getCreateCrudCreateFormModelFile } from './createCrudCreate.files'
@@ -19,6 +21,7 @@ export async function createCrudCreateFormModel({
   })
 
   const entityCasings = getCases(entityName)
+  const uuidFile = getCreateCrudUuidModelFile(entityName)
 
   fileManipulator
     .addImport({
@@ -28,7 +31,7 @@ export async function createCrudCreateFormModel({
       ],
     })
     .addImport({
-      moduleSpecifier: `@/models/${entityCasings.kebabCase}/${entityCasings.camelCase}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(uuidFile),
       namedImports: [
         `${entityCasings.camelCase}UuidSchema`,
       ],

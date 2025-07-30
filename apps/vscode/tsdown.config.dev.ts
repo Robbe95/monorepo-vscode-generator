@@ -1,12 +1,19 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
+  dts: false,
   entry: [
     'src/index.ts',
   ],
-  watch: [
-    'src/**/*.ts',
-    '../base/src/**/*.ts',
+  external: [
+    'vscode',
   ],
-
+  format: [
+    'cjs',
+  ],
+  shims: false,
+  watch: [
+    './src',
+    '../base/src',
+  ],
 })
