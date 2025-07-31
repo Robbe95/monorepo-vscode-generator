@@ -1,10 +1,12 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+
 import { createCrudUpdateApiMutation } from './createCrudUpdateApiMutation'
 import { createCrudUpdateFormModel } from './createCrudUpdateFormModel'
 import { createCrudUpdateTemplates } from './createCrudUpdateTemplates'
 import { createCrudUpdateTransformer } from './createCrudUpdateTransformer'
 
 export interface CreateCrudUpdateParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudUpdate({

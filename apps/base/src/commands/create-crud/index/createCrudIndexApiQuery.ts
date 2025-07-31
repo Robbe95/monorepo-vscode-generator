@@ -1,6 +1,6 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
@@ -13,13 +13,13 @@ import {
 export async function createCrudIndexApiQuery({
   entityName,
 }: {
-  entityName: string
+  entityName: EntityCasing
 }) {
   await addToServiceFile(entityName)
   await createQueryFile(entityName)
 }
 
-async function addToServiceFile(entityName: string) {
+async function addToServiceFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudServiceFile(entityName)
@@ -30,14 +30,12 @@ async function addToServiceFile(entityName: string) {
     path,
   })
 
-  const entityCasing = allCases(entityName)
-
   fileManipulator
     .addImport({
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}Index`,
+        `${entityName.pascalCase}Index`,
       ],
     })
     .addImport({
@@ -52,28 +50,28 @@ async function addToServiceFile(entityName: string) {
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudIndexQueryOptionsModelFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}IndexQueryOptions`,
+        `${entityName.pascalCase}IndexQueryOptions`,
       ],
     })
     .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `getAll`,
-      comment: `// TODO Implement the logic to fetch all ${entityCasing.pascalCase}Index items.`,
-      nameClass: `${entityCasing.pascalCase}Service`,
+      comment: `// TODO Implement the logic to fetch all ${entityName.pascalCase}Index items.`,
+      nameClass: `${entityName.pascalCase}Service`,
       parameters: [
         {
           name: 'paginationOptions',
-          type: `PaginationOptions<${entityCasing.pascalCase}IndexQueryOptions>`,
+          type: `PaginationOptions<${entityName.pascalCase}IndexQueryOptions>`,
         },
       ],
-      returnType: `Promise<PaginatedData<${entityCasing.pascalCase}Index>>`,
+      returnType: `Promise<PaginatedData<${entityName.pascalCase}Index>>`,
       statements: [],
     })
     .save()
 }
 
-async function createQueryFile(entityName: string) {
+async function createQueryFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudIndexApiQueryFile(entityName)
@@ -83,8 +81,6 @@ async function createQueryFile(entityName: string) {
     projectPath: BASE_PATH,
     path,
   })
-
-  const entityCasing = allCases(entityName)
 
   fileManipulator
     .addImport({
@@ -111,29 +107,29 @@ async function createQueryFile(entityName: string) {
     .addImport({
       moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}Index`,
+        `${entityName.pascalCase}Index`,
       ],
     })
     .addImport({
       moduleSpecifier: toFileAlias(getCreateCrudIndexQueryOptionsModelFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}IndexQueryOptions`,
+        `${entityName.pascalCase}IndexQueryOptions`,
       ],
     })
     .addImport({
       moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}Service`,
+        `${entityName.pascalCase}Service`,
       ],
     })
     .addFunction({
       isExported: true,
-      name: `use${entityCasing.pascalCase}IndexQuery`,
-      comment: `// TODO Implement the logic to fetch all ${entityCasing.pascalCase}Index items.`,
+      name: `use${entityName.pascalCase}IndexQuery`,
+      comment: `// TODO Implement the logic to fetch all ${entityName.pascalCase}Index items.`,
       parameters: [
         {
           name: 'paginationOptions',
-          type: `ComputedRef<PaginationOptions<${entityCasing.pascalCase}IndexQueryOptions>>`,
+          type: `ComputedRef<PaginationOptions<${entityName.pascalCase}IndexQueryOptions>>`,
         },
 
       ],
@@ -141,10 +137,10 @@ async function createQueryFile(entityName: string) {
         `
           return useQuery({
             queryFn: () => {
-              return ${entityCasing.pascalCase}Service.getAll(paginationOptions.value)
+              return ${entityName.pascalCase}Service.getAll(paginationOptions.value)
             },
             queryKey: {
-               ${entityCasing.camelCase}Index: {
+               ${entityName.camelCase}Index: {
                 paginationOptions,
               },
             },

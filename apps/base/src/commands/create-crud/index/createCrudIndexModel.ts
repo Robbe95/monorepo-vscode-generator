@@ -1,6 +1,5 @@
 import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
@@ -20,26 +19,24 @@ export async function createCrudIndexModel({
     path,
   })
 
-  const entityCasing = allCases(entityName)
-
   fileManipulator
     .addImport({
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${entityCasing.pascalCase}Uuid`,
+        `${entityName.pascalCase}Uuid`,
       ],
     })
     .addStatement({
-      statement: `// TODO ${entityCasing.camelCase}Index is generated. Update it with your properties.`,
+      statement: `// TODO ${entityName.camelCase}Index is generated. Update it with your properties.`,
     })
     .addInterface({
       isExported: true,
-      name: `${entityCasing.pascalCase}Index`,
+      name: `${entityName.pascalCase}Index`,
       properties: [
         {
           name: 'uuid',
-          type: `${entityCasing.pascalCase}Uuid`,
+          type: `${entityName.pascalCase}Uuid`,
         },
       ],
     })

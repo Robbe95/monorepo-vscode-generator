@@ -1,6 +1,5 @@
 import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
@@ -20,7 +19,6 @@ export async function createCrudCreateFormModel({
     path,
   })
 
-  const entityCasings = getCases(entityName)
   const uuidFile = getCreateCrudUuidModelFile(entityName)
 
   fileManipulator
@@ -33,21 +31,21 @@ export async function createCrudCreateFormModel({
     .addImport({
       moduleSpecifier: toFileAlias(uuidFile),
       namedImports: [
-        `${entityCasings.camelCase}UuidSchema`,
+        `${entityName.camelCase}UuidSchema`,
       ],
     })
     .addVariable({
       isExported: true,
-      name: `${entityCasings.camelCase}CreateFormSchema`,
-      comment: `// TODO Update z.object to the correct schema for ${entityCasings.camelCase}CreateForm`,
+      name: `${entityName.camelCase}CreateFormSchema`,
+      comment: `// TODO Update z.object to the correct schema for ${entityName.camelCase}CreateForm`,
       initializer: `z.object({
-      uuid: ${entityCasings.camelCase}UuidSchema,
+      uuid: ${entityName.camelCase}UuidSchema,
     })`,
     })
     .addType({
       isExported: true,
-      name: `${entityCasings.pascalCase}CreateForm`,
-      type: `z.infer<typeof ${entityCasings.camelCase}CreateFormSchema>`,
+      name: `${entityName.pascalCase}CreateForm`,
+      type: `z.infer<typeof ${entityName.camelCase}CreateFormSchema>`,
     })
     .save()
 }

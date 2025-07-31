@@ -1,38 +1,60 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import {
+  getCreateCrudDetailApiQueryFile,
+  getCreateCrudDetailViewFile,
+} from '#commands/create-crud/detail/createCrudDetail.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
+import { toVueImport } from '#utils/files/toVueImport.ts'
 
 export function getDetailDataProviderTemplate({
   entityName,
 }: {
-  entityName: string
+  entityName: EntityCasing
 }): string {
-  const kebabCase = CaseTransformer.toKebabCase(entityName)
-  const pascalCase = CaseTransformer.toPascalCase(entityName)
-  const camelCase = CaseTransformer.toCamelCase(entityName)
+  const uuidImport = toTsImport(
+    {
+      ...getCreateCrudUuidModelFile(entityName),
+      isType: true,
+      methodNames: [
+        `${entityName.pascalCase}Uuid`,
+      ],
+    },
+  )
+
+  const detailQueryImport = toTsImport({
+    ...getCreateCrudDetailApiQueryFile(entityName),
+    methodNames: [
+      `use${entityName.pascalCase}DetailQuery`,
+    ],
+  })
+
+  const detailViewImport = toVueImport(getCreateCrudDetailViewFile(entityName))
 
   return `
   <script setup lang="ts">
 import { computed } from 'vue'
 
 import AppDataProviderView from '@/components/app/AppDataProviderView.vue'
-import type { ${pascalCase}Uuid } from '@/models/${kebabCase}/${camelCase}Uuid.model'
-import { use${pascalCase}DetailQuery } from '@/modules/${kebabCase}/api/queries/${camelCase}Detail.query'
-import ${pascalCase}DetailView from '@/modules/${camelCase}/features/detail/views/${pascalCase}DetailView.vue'
+${uuidImport}
+${detailQueryImport}
+${detailViewImport}
 
 const props = defineProps<{
-  ${camelCase}Uuid: ${pascalCase}Uuid
+  ${entityName.camelCase}Uuid: ${entityName.pascalCase}Uuid
 }>()
 
-const ${camelCase}DetailQuery = use${pascalCase}DetailQuery(computed<${pascalCase}Uuid>(() => props.${camelCase}Uuid))
+const ${entityName.camelCase}DetailQuery = use${entityName.pascalCase}DetailQuery(computed<${entityName.pascalCase}Uuid>(() => props.${entityName.camelCase}Uuid))
 </script>
 
 <template>
   <AppDataProviderView
     :queries="{
-      ${camelCase}: ${camelCase}DetailQuery,
+      ${entityName.camelCase}: ${entityName.camelCase}DetailQuery,
     }"
   >
     <template #default="{ data }">
-      <${pascalCase}DetailView :${camelCase}="data.${camelCase}" />
+      <${entityName.pascalCase}DetailView :${entityName.camelCase}="data.${entityName.camelCase}" />
     </template>
   </AppDataProviderView>
 </template>

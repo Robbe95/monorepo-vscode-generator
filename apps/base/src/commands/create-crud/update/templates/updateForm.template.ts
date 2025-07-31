@@ -1,22 +1,20 @@
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getUpdateFormTemplate(entityName: string) {
-  const entityCasing = allCases(entityName)
-
+export async function getUpdateFormTemplate(entityName: EntityCasing) {
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.title`,
-    value: `${entityCasing.humanReadable}`,
+    key: `module.${entityName.snakeCase}.title`,
+    value: `${entityName.humanReadable}`,
   })
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.uuid`,
-    value: `${entityCasing.humanReadable}`,
+    key: `module.${entityName.snakeCase}.uuid`,
+    value: `${entityName.humanReadable}`,
   })
   addTestId({
-    key: `${toPlural(entityCasing.upperCase)}.FORM.UPDATE_SUBMIT_BUTTON`,
-    value: `${entityCasing.kebabCase}-update-form-submit-button`,
+    key: `${toPlural(entityName.upperCase)}.FORM.UPDATE_SUBMIT_BUTTON`,
+    value: `${entityName.kebabCase}-update-form-submit-button`,
   })
 
   return `
@@ -37,38 +35,38 @@ import FormLayout from '@/components/form/FormLayout.vue'
 import FormSubmitButton from '@/components/form/FormSubmitButton.vue'
 import { useApiErrorToast } from '@/composables/api-error-toast/apiErrorToast.composable'
 import { TEST_ID } from '@/constants/testId.constant'
-import { ${entityCasing.pascalCase}UpdateTransformer } from '@/models/${entityCasing.kebabCase}/update/${entityCasing.camelCase}Update.transformer.ts'
-import type { ${entityCasing.pascalCase}Detail } from '@/models/${entityCasing.kebabCase}/detail/${entityCasing.camelCase}Detail.model'
-import { ${entityCasing.camelCase}UpdateFormSchema } from '@/models/${entityCasing.kebabCase}/update/${entityCasing.camelCase}UpdateForm.model'
-import { use${entityCasing.pascalCase}UpdateMutation } from '@/modules/${entityCasing.kebabCase}/api/mutations/${entityCasing.camelCase}Update.mutation'
+import { ${entityName.pascalCase}UpdateTransformer } from '@/models/${entityName.kebabCase}/update/${entityName.camelCase}Update.transformer.ts'
+import type { ${entityName.pascalCase}Detail } from '@/models/${entityName.kebabCase}/detail/${entityName.camelCase}Detail.model'
+import { ${entityName.camelCase}UpdateFormSchema } from '@/models/${entityName.kebabCase}/update/${entityName.camelCase}UpdateForm.model'
+import { use${entityName.pascalCase}UpdateMutation } from '@/modules/${entityName.kebabCase}/api/mutations/${entityName.camelCase}Update.mutation'
 import { toFormField } from '@/utils/formango.util'
 
 const props = defineProps<{
-  ${entityCasing.camelCase}: ${entityCasing.pascalCase}Detail
+  ${entityName.camelCase}: ${entityName.pascalCase}Detail
 }>()
 
 const i18n = useI18n()
 const router = useRouter()
 const toast = useVcToast()
 const errorToast = useApiErrorToast()
-const ${entityCasing.camelCase}UpdateMutation = use${entityCasing.pascalCase}UpdateMutation()
+const ${entityName.camelCase}UpdateMutation = use${entityName.pascalCase}UpdateMutation()
 
 const form = useForm({
-  initialState: () => ${entityCasing.pascalCase}UpdateTransformer.toForm(props.${entityCasing.camelCase}),
-  schema: ${entityCasing.camelCase}UpdateFormSchema,
+  initialState: () => ${entityName.pascalCase}UpdateTransformer.toForm(props.${entityName.camelCase}),
+  schema: ${entityName.camelCase}UpdateFormSchema,
   onSubmit: async (values) => {
     try {
-      await ${entityCasing.camelCase}UpdateMutation.execute({
+      await ${entityName.camelCase}UpdateMutation.execute({
         body: values,
         params: {
-          ${entityCasing.camelCase}Uuid: props.${entityCasing.camelCase}.uuid,
+          ${entityName.camelCase}Uuid: props.${entityName.camelCase}.uuid,
         },
       })
 
       await router.push({
-        name: '${entityCasing.kebabCase}-detail',
+        name: '${entityName.kebabCase}-detail',
         params: {
-          ${entityCasing.camelCase}Uuid: props.${entityCasing.camelCase}.uuid,
+          ${entityName.camelCase}Uuid: props.${entityName.camelCase}.uuid,
         },
       })
     }
@@ -94,19 +92,19 @@ const uuid = form.register('uuid')
         <FormSubmitButton
           :form-id="formId"
           :form="form"
-          :data-test-id="TEST_ID.${toPlural(entityCasing.upperCase)}.FORM.SUBMIT_BUTTON"
+          :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON"
           :label="i18n.t('form.save_changes')"
         />
       </AppTeleport>
 
       <FormLayout>
         <FormFieldset
-          :title="i18n.t('module.${entityCasing.snakeCase}.title')"
+          :title="i18n.t('module.${entityName.snakeCase}.title')"
         >
           <FormGrid :cols="2">
             <VcTextField
               v-bind="toFormField(uuid)"
-              :label="i18n.t('module.${entityCasing.snakeCase}.uuid')"
+              :label="i18n.t('module.${entityName.snakeCase}.uuid')"
             />
           </FormGrid>
         </FormFieldset>

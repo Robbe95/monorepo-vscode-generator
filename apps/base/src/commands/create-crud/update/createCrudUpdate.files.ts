@@ -1,43 +1,43 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudUpdateFormModelFile(entityName: string) {
+export function getCreateCrudUpdateFormModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}UpdateForm.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/update`,
+    name: `${entityName.camelCase}UpdateForm.model.ts`,
+    path: `src/models/${entityName.kebabCase}/update`,
   }
 }
 
-export function getCreateCrudUpdateTransformerFile(entityName: string) {
+export function getCreateCrudUpdateTransformerFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Update.transformer.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/update`,
+    name: `${entityName.camelCase}Update.transformer.ts`,
+    path: `src/models/${entityName.kebabCase}/update`,
   }
 }
 
-export function getCreateCrudUpdateApiMutationFile(entityName: string) {
+export function getCreateCrudUpdateApiMutationFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Update.mutation.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/mutations`,
+    name: `${entityName.camelCase}Update.mutation.ts`,
+    path: `src/modules/${entityName.kebabCase}/api/mutations`,
   }
 }
 
-export function getCreateCrudUpdateDataProviderViewFile(entityName: string) {
+export function getCreateCrudUpdateDataProviderViewFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateDataProviderView.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/views`,
+    name: `${entityName.pascalCase}UpdateDataProviderView.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/update/views`,
   }
 }
 
-export function getCreateCrudUpdateViewFile(entityName: string) {
+export function getCreateCrudUpdateViewFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateView.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/views`,
+    name: `${entityName.pascalCase}UpdateView.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/update/views`,
   }
 }
 
-export function getCreateCrudUpdateFormFile(entityName: string) {
+export function getCreateCrudUpdateFormFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateForm.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/update/components`,
+    name: `${entityName.pascalCase}UpdateForm.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/update/components`,
   }
 }

@@ -1,7 +1,9 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+
 import { createCrudDeleteApiMutation } from './createCrudDeleteApiMutation'
 
 export interface CreateCrudDeleteParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudDelete({

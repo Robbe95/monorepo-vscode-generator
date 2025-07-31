@@ -3,6 +3,7 @@ import { SyntaxKind } from 'ts-morph'
 import { createCrudModuleAddExport } from '#commands/create-crud/module/createCrudModuleAddExport.ts'
 import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
@@ -13,7 +14,7 @@ import { getCreateCrudRoutesFile } from './createCrudRoutes.files'
 
 type RouteOption = 'create' | 'delete' | 'detail' | 'index' | 'update'
 interface CreateCrudRoutesOptions {
-  entityName: string
+  entityName: EntityCasing
 
   routes: RouteOption[]
 }
@@ -21,7 +22,7 @@ interface CreateCrudRoutesOptions {
 function getRoutePath({
   entityName, route,
 }: {
-  entityName: string
+  entityName: EntityCasing
   route: RouteOption
 }): string {
   switch (route) {
@@ -46,16 +47,16 @@ function getRoutePath({
 function toRoute({
   entityName, route,
 }: {
-  entityName: string
+  entityName: EntityCasing
   route: RouteOption
 }) {
   return `{
-    name: '${CaseTransformer.toKebabCase(entityName)}-${route}',
+    name: '${entityName.kebabCase}-${route}',
     path: '${getRoutePath({
       entityName,
       route,
     })}',
-    component: (): Promise<Component> => import('@/modules/${CaseTransformer.toKebabCase(entityName)}/features/${route}/views/${CaseTransformer.toPascalCase(entityName)}${CaseTransformer.toPascalCase(route)}View.vue'),
+    component: (): Promise<Component> => import('@/modules/${entityName.kebabCase}/features/${route}/views/${entityName.pascalCase}${CaseTransformer.toPascalCase(route)}View.vue'),
   }`
 }
 
@@ -91,15 +92,16 @@ export async function createCrudRoutes({
     })
     .addVariable({
       isExported: true,
-      name: `${entityName}Routes`,
+      name: `${entityName.camelCase}Routes`,
       initializer: `[
           {
-            path: '/${CaseTransformer.toKebabCase(toPlural(entityName))}',
+            path: '/${CaseTransformer.toKebabCase(toPlural(entityName.camelCase))}',
             children: [
-              ${filteredRoutes.map((route) => toRoute({
-                entityName,
-                route,
-              }))}
+              ${filteredRoutes
+                .map((route) => toRoute({
+                  entityName,
+                  route,
+                }))}
             ],
           }
         ] as const satisfies RouteRecordRaw[]`,
@@ -107,16 +109,16 @@ export async function createCrudRoutes({
     .save()
 
   await addToRoutesIndex({
-    entityName: `${entityName}`,
+    entityName,
   })
   addRoutesToModuleExport({
-    entityName: `${entityName}`,
+    entityName,
   })
 }
 
 async function addToRoutesIndex({
   entityName,
-}: { entityName: string }) {
+}: { entityName: EntityCasing }) {
   const config = await getConfig()
   const routesSourceFile = await getTsSourceFile({
     filePath: config.routerFileLocation,
@@ -124,7 +126,7 @@ async function addToRoutesIndex({
   })
 
   routesSourceFile.addImportDeclaration({
-    moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}`,
+    moduleSpecifier: `@/modules/${entityName.kebabCase}`,
     namedImports: [
       `${entityName}Routes`,
     ],
@@ -169,7 +171,7 @@ async function addToRoutesIndex({
 
 function addRoutesToModuleExport({
   entityName,
-}: { entityName: string }) {
+}: { entityName: EntityCasing }) {
   const routesFile = getCreateCrudRoutesFile(entityName)
 
   createCrudModuleAddExport({

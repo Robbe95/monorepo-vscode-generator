@@ -5,17 +5,14 @@ import {
   getCreateCrudUpdateFormFile,
   getCreateCrudUpdateViewFile,
 } from './createCrudUpdate.files'
+import type { CreateCrudUpdateParams } from './createCrudUpdate.ts'
 import { getUpdateDataProviderViewFile } from './templates/updateDataProviderView.template'
 import { getUpdateFormTemplate } from './templates/updateForm.template'
 import { getUpdateViewTemplate } from './templates/updateView.template.ts'
 
-export interface CreateCrudIndexViewParams {
-  entityName: string
-}
-
 export async function createCrudUpdateTemplates({
   entityName,
-}: CreateCrudIndexViewParams) {
+}: CreateCrudUpdateParams) {
   const viewFile = getCreateCrudUpdateViewFile(entityName)
   const dataProviderFile = getCreateCrudUpdateDataProviderViewFile(entityName)
   const formFile = getCreateCrudUpdateFormFile(entityName)

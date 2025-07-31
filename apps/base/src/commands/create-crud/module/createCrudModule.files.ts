@@ -1,8 +1,8 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudModuleIndexFile(entityName: string) {
+export function getCreateCrudModuleIndexFile(entityName: EntityCasing) {
   return {
     name: `index.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}`,
+    path: `src/modules/${entityName.kebabCase}`,
   }
 }

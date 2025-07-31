@@ -1,8 +1,8 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudDeleteApiMutationFile(entityName: string) {
+export function getCreateCrudDeleteApiMutationFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Delete.mutation.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/mutations`,
+    name: `${entityName.camelCase}Delete.mutation.ts`,
+    path: `src/modules/${entityName.kebabCase}/api/mutations`,
   }
 }

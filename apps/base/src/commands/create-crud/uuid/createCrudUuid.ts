@@ -1,11 +1,11 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import { getCreateCrudUuidModelFile } from './createCrudUuid.files'
 
 interface CreateCrudUuidOptions {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudUuid({
@@ -30,13 +30,13 @@ export async function createCrudUuid({
     })
     .addVariable({
       isExported: true,
-      name: `${entityName}UuidSchema`,
-      initializer: `z.string().uuid().brand('${entityName}Uuid')`,
+      name: `${entityName.camelCase}UuidSchema`,
+      initializer: `z.string().uuid().brand('${entityName.camelCase}Uuid')`,
     })
     .addType({
       isExported: true,
-      name: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
-      type: `z.infer<typeof ${entityName}UuidSchema>`,
+      name: `${entityName.pascalCase}Uuid`,
+      type: `z.infer<typeof ${entityName.camelCase}UuidSchema>`,
     })
     .save()
 }

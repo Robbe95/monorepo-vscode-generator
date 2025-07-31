@@ -1,11 +1,11 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import { getCreateCrudServiceFile } from './createCrudService.files'
 
 export interface CreateCrudServiceParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudService({
@@ -24,7 +24,7 @@ export async function createCrudService({
   fileManipulator
     .addClass({
       isExported: true,
-      name: `${CaseTransformer.toPascalCase(entityName)}Service`,
+      name: `${entityName.pascalCase}Service`,
     })
     .save()
 }

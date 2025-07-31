@@ -1,36 +1,36 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudCreateFormModelFile(entityName: string) {
+export function getCreateCrudCreateFormModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}CreateForm.model.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/models/create`,
+    name: `${entityName.camelCase}CreateForm.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/create`,
   }
 }
 
-export function getCreateCrudCreateTransformerFile(entityName: string) {
+export function getCreateCrudCreateTransformerFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Create.transformer.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/models/create`,
+    name: `${entityName.camelCase}Create.transformer.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/create`,
   }
 }
 
-export function getCreateCrudCreateApiMutationFile(entityName: string) {
+export function getCreateCrudCreateApiMutationFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Create.mutation.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/mutations`,
+    name: `${entityName.camelCase}Create.mutation.ts`,
+    path: `src/modules/${entityName.kebabCase}/api/mutations`,
   }
 }
 
-export function getCreateCrudCreateViewFile(entityName: string) {
+export function getCreateCrudCreateViewFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}CreateView.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/create/views`,
+    name: `${entityName.pascalCase}CreateView.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/create/views`,
   }
 }
 
-export function getCreateCrudCreateFormFile(entityName: string) {
+export function getCreateCrudCreateFormFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}CreateForm.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/create/components`,
+    name: `${entityName.pascalCase}CreateForm.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/create/components`,
   }
 }

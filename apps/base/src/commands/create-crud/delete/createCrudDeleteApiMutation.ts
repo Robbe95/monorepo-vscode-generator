@@ -1,14 +1,14 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
 import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import { getCreateCrudDeleteApiMutationFile } from './createCrudDelete.files'
 
 interface CreateCrudDeleteApiMutationOptions {
-  entityName: string
+  entityName: EntityCasing
 }
 export async function createCrudDeleteApiMutation({
   entityName,
@@ -17,7 +17,7 @@ export async function createCrudDeleteApiMutation({
   await addToServiceFile(entityName)
 }
 
-async function createMutationFile(entityName: string) {
+async function createMutationFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudDeleteApiMutationFile(entityName)
@@ -27,8 +27,6 @@ async function createMutationFile(entityName: string) {
     projectPath: BASE_PATH,
     path,
   })
-
-  const entityCasings = allCases(entityName)
 
   fileManipulator
     .addImport({
@@ -41,36 +39,36 @@ async function createMutationFile(entityName: string) {
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${entityCasings.pascalCase}Uuid`,
+        `${entityName.pascalCase}Uuid`,
       ],
     })
     .addImport({
       moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
       namedImports: [
-        `${entityCasings.pascalCase}Service`,
+        `${entityName.pascalCase}Service`,
       ],
     })
     .addInterface({
-      name: `${entityCasings.pascalCase}DeleteMutationParams`,
+      name: `${entityName.pascalCase}DeleteMutationParams`,
       properties: [
         {
-          name: `${entityCasings.camelCase}Uuid`,
-          type: `${entityCasings.pascalCase}Uuid`,
+          name: `${entityName.camelCase}Uuid`,
+          type: `${entityName.pascalCase}Uuid`,
         },
       ],
     })
     .addFunction({
       isExported: true,
-      name: `use${entityCasings.pascalCase}DeleteMutation`,
+      name: `use${entityName.pascalCase}DeleteMutation`,
       parameters: [],
       statements: [
         `
           return useMutation({
-            queryFn: async (queryOptions: { params: ${entityCasings.pascalCase}DeleteMutationParams }) => {
-              return await ${entityCasings.pascalCase}Service.delete(queryOptions.params.${entityCasings.camelCase}Uuid)
+            queryFn: async (queryOptions: { params: ${entityName.pascalCase}DeleteMutationParams }) => {
+              return await ${entityName.pascalCase}Service.delete(queryOptions.params.${entityName.camelCase}Uuid)
             },
             queryKeysToInvalidate: {
-              ${entityCasings.camelCase}Index: {},
+              ${entityName.camelCase}Index: {},
             },
           })
         `,
@@ -79,7 +77,7 @@ async function createMutationFile(entityName: string) {
     .save()
 }
 
-async function addToServiceFile(entityName: string) {
+async function addToServiceFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudServiceFile(entityName)
@@ -89,26 +87,25 @@ async function addToServiceFile(entityName: string) {
     projectPath: BASE_PATH,
     path,
   })
-  const entityCasings = allCases(entityName)
 
   fileManipulator
     .addImport({
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${entityCasings.pascalCase}Uuid`,
+        `${entityName.pascalCase}Uuid`,
       ],
     })
     .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `delete`,
-      comment: `// TODO Implement the logic to delete a ${entityCasings.pascalCase} item.`,
-      nameClass: `${entityCasings.pascalCase}Service`,
+      comment: `// TODO Implement the logic to delete a ${entityName.pascalCase} item.`,
+      nameClass: `${entityName.pascalCase}Service`,
       parameters: [
         {
-          name: `${entityCasings.camelCase}Uuid`,
-          type: `${entityCasings.pascalCase}Uuid`,
+          name: `${entityName.camelCase}Uuid`,
+          type: `${entityName.pascalCase}Uuid`,
         },
       ],
       returnType: `Promise<void>`,

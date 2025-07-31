@@ -5,12 +5,12 @@ import type {
 
 import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 type KeyOption = 'index' | 'update'
 interface CreateCrudQueryKeysOptions {
-  entityName: string
+  entityName: EntityCasing
   keys: KeyOption[]
 }
 
@@ -33,7 +33,7 @@ export async function createCrudQueryKeys({
 
 function addIndexQueryKey(
   projectKeys: InterfaceDeclaration,
-  entityName: string,
+  entityName: EntityCasing,
   keys: KeyOption[],
   sourceFile: SourceFile,
 ) {
@@ -41,7 +41,7 @@ function addIndexQueryKey(
     return
   }
 
-  const existingKey = projectKeys.getProperty(`${CaseTransformer.toCamelCase(entityName)}Index`)
+  const existingKey = projectKeys.getProperty(`${entityName.camelCase}Index`)
 
   if (existingKey) {
     return
@@ -49,22 +49,22 @@ function addIndexQueryKey(
 
   sourceFile.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/index/${entityName}IndexQueryOptions.model.ts`,
+    moduleSpecifier: `@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexQueryOptions.model.ts`,
     namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions`,
+      `${entityName.pascalCase}IndexQueryOptions`,
     ],
   })
 
   projectKeys
     .addProperty({
-      name: `${CaseTransformer.toCamelCase(entityName)}Index`,
-      type: `{ paginationOptions?: ComputedRef<PaginationOptions<${CaseTransformer.toPascalCase(entityName)}IndexQueryOptions>> }`,
+      name: `${entityName.camelCase}Index`,
+      type: `{ paginationOptions?: ComputedRef<PaginationOptions<${entityName.pascalCase}IndexQueryOptions>> }`,
     })
 }
 
 function addUpdateQueryKey(
   projectKeys: InterfaceDeclaration,
-  entityName: string,
+  entityName: EntityCasing,
   keys: KeyOption[],
   sourceFile: SourceFile,
 ) {
@@ -72,7 +72,7 @@ function addUpdateQueryKey(
     return
   }
 
-  const existingKey = projectKeys.getProperty(`${CaseTransformer.toCamelCase(entityName)}Update`)
+  const existingKey = projectKeys.getProperty(`${entityName.camelCase}Update`)
 
   if (existingKey) {
     return
@@ -96,15 +96,15 @@ function addUpdateQueryKey(
 
   sourceFile.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+    moduleSpecifier: `@/models/${entityName.kebabCase}/${entityName.camelCase}Uuid.model.ts`,
     namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+      `${entityName.pascalCase}Uuid`,
     ],
   })
 
   projectKeys
     .addProperty({
-      name: `${CaseTransformer.toCamelCase(entityName)}Detail`,
-      type: `{ ${CaseTransformer.toCamelCase(entityName)}Uuid: ComputedRef<${CaseTransformer.toPascalCase(entityName)}Uuid> }`,
+      name: `${entityName.camelCase}Detail`,
+      type: `{ ${entityName.camelCase}Uuid: ComputedRef<${entityName.pascalCase}Uuid> }`,
     })
 }

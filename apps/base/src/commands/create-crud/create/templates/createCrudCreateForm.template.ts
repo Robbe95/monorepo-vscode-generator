@@ -3,14 +3,13 @@ import {
   getCreateCrudCreateFormModelFile,
 } from '#commands/create-crud/create/createCrudCreate.files.ts'
 import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { toTsImport } from '#utils/files/toTsImport.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getCreateCrudCreateFormTemplate(entityName: string) {
-  const entityCasing = allCases(entityName)
+export async function getCreateCrudCreateFormTemplate(entityName: EntityCasing) {
   const createFormModelFile = getCreateCrudCreateFormModelFile(entityName)
   const uuidFile = getCreateCrudUuidModelFile(entityName)
   const mutationFile = getCreateCrudCreateApiMutationFile(entityName)
@@ -18,14 +17,14 @@ export async function getCreateCrudCreateFormTemplate(entityName: string) {
   const createFormSchemaImport = toTsImport({
     ...createFormModelFile,
     methodNames: [
-      `${entityCasing.camelCase}CreateFormSchema`,
+      `${entityName.camelCase}CreateFormSchema`,
     ],
   })
 
   const mutationImport = toTsImport({
     ...mutationFile,
     methodNames: [
-      `use${entityCasing.pascalCase}CreateMutation`,
+      `use${entityName.pascalCase}CreateMutation`,
     ],
   })
 
@@ -33,7 +32,7 @@ export async function getCreateCrudCreateFormTemplate(entityName: string) {
     ...uuidFile,
     isType: true,
     methodNames: [
-      `${entityCasing.pascalCase}Uuid`,
+      `${entityName.pascalCase}Uuid`,
     ],
   })
 
@@ -41,23 +40,23 @@ export async function getCreateCrudCreateFormTemplate(entityName: string) {
     ...createFormModelFile,
     isType: true,
     methodNames: [
-      `${entityCasing.pascalCase}CreateForm`,
+      `${entityName.pascalCase}CreateForm`,
     ],
   })
 
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.create.title`,
-    value: `Create ${entityCasing.humanReadable}`,
+    key: `module.${entityName.snakeCase}.create.title`,
+    value: `Create ${entityName.humanReadable}`,
   })
 
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.info`,
-    value: `${entityCasing.humanReadable} Info`,
+    key: `module.${entityName.snakeCase}.info`,
+    value: `${entityName.humanReadable} Info`,
   })
 
   addTestId({
-    key: `${toPlural(entityCasing.upperCase)}.FORM.SUBMIT_BUTTON`,
-    value: `${entityCasing.kebabCase}-create-form-submit-button`,
+    key: `${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON`,
+    value: `${entityName.kebabCase}-create-form-submit-button`,
   })
 
   return `<script setup lang="ts">
@@ -86,23 +85,23 @@ const i18n = useI18n()
 const router = useRouter()
 const toast = useVcToast()
 const errorToast = useApiErrorToast()
-const ${entityCasing.camelCase}CreateMutation = use${entityCasing.pascalCase}CreateMutation()
+const ${entityName.camelCase}CreateMutation = use${entityName.pascalCase}CreateMutation()
 
 const form = useForm({
-  initialState: (): ${entityCasing.pascalCase}CreateForm => ({
-    uuid: '' as ${entityCasing.pascalCase}Uuid,
+  initialState: (): ${entityName.pascalCase}CreateForm => ({
+    uuid: '' as ${entityName.pascalCase}Uuid,
   }),
-  schema: ${entityCasing.camelCase}CreateFormSchema,
+  schema: ${entityName.camelCase}CreateFormSchema,
   onSubmit: async (values) => {
     try {
-      const ${entityCasing.camelCase}Uuid = await ${entityCasing.camelCase}CreateMutation.execute({
+      const ${entityName.camelCase}Uuid = await ${entityName.camelCase}CreateMutation.execute({
         body: values,
       })
 
       await router.push({
-        name: '${entityCasing.kebabCase}-detail',
+        name: '${entityName.kebabCase}-detail',
         params: {
-          ${entityCasing.camelCase}Uuid,
+          ${entityName.camelCase}Uuid,
         },
       })
     }
@@ -128,16 +127,16 @@ const uuid = form.register('uuid')
         <FormSubmitButton
           :form="form"
           :form-id="formId"
-          :data-test-id="TEST_ID.${toPlural(entityCasing.upperCase)}.FORM.SUBMIT_BUTTON"
+          :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON"
           :label="i18n.t('shared.save')"
         />
       </AppTeleport>
 
       <FormLayout>
-        <FormFieldset :title="i18n.t('module.${entityCasing.snakeCase}.info')">
+        <FormFieldset :title="i18n.t('module.${entityName.snakeCase}.info')">
           <VcTextField
             v-bind="toFormField(uuid)"
-            :label="i18n.t('module.${entityCasing.snakeCase}.uuid')"
+            :label="i18n.t('module.${entityName.snakeCase}.uuid')"
           />
         </FormFieldset>
       </FormLayout>

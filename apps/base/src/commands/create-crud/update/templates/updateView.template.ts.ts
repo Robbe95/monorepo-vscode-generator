@@ -1,12 +1,10 @@
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getUpdateViewTemplate(entityName: string) {
-  const entityCasing = allCases(entityName)
-
+export async function getUpdateViewTemplate(entityName: EntityCasing) {
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.update.title`,
-    value: `Update ${entityCasing.humanReadable}`,
+    key: `module.${entityName.snakeCase}.update.title`,
+    value: `Update ${entityName.humanReadable}`,
   })
 
   return `
@@ -14,19 +12,19 @@ export async function getUpdateViewTemplate(entityName: string) {
 import { useI18n } from 'vue-i18n'
 
 import FormPage from '@/components/form/FormPage.vue'
-import type { ${entityCasing.pascalCase}Detail } from '@/models/${entityCasing.kebabCase}/detail/${entityCasing.camelCase}Detail.model'
-import ${entityCasing.pascalCase}UpdateForm from '@/modules/${entityCasing.kebabCase}/features/update/components/${entityCasing.pascalCase}UpdateForm.vue'
+import type { ${entityName.pascalCase}Detail } from '@/models/${entityName.kebabCase}/detail/${entityName.camelCase}Detail.model'
+import ${entityName.pascalCase}UpdateForm from '@/modules/${entityName.kebabCase}/features/update/components/${entityName.pascalCase}UpdateForm.vue'
 
 const props = defineProps<{
-  ${entityCasing.camelCase}: ${entityCasing.pascalCase}Detail
+  ${entityName.camelCase}: ${entityName.pascalCase}Detail
 }>()
 
 const i18n = useI18n()
 </script>
 
 <template>
-  <FormPage :title="i18n.t('module.${entityCasing.camelCase}.update.title')">
-    <${entityCasing.pascalCase}UpdateForm :${entityCasing.camelCase}="props.${entityCasing.camelCase}" />
+  <FormPage :title="i18n.t('module.${entityName.camelCase}.update.title')">
+    <${entityName.pascalCase}UpdateForm :${entityName.camelCase}="props.${entityName.camelCase}" />
   </FormPage>
 </template>
 

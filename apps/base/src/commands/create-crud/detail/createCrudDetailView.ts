@@ -1,3 +1,4 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { createTemplate } from '#utils/template/createTemplate.utils.ts'
 
 import {
@@ -8,7 +9,7 @@ import { getDetailDataProviderTemplate } from './templates/detailDataProvider.te
 import { getDetailViewTemplate } from './templates/detailView.template'
 
 export interface CreateCrudDetailViewParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudDetailView({

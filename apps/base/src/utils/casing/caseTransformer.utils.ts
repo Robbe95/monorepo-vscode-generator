@@ -68,6 +68,15 @@ export const CaseTransformer = {
   },
 }
 
+export interface EntityCasing {
+  camelCase: string
+  humanReadable: string
+  kebabCase: string
+  pascalCase: string
+  snakeCase: string
+  upperCase: string
+}
+
 export function allCases(str: string) {
   return {
     camelCase: CaseTransformer.toCamelCase(str),

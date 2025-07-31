@@ -1,34 +1,22 @@
-import {
-  allCases,
-  CaseTransformer,
-} from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getIndexViewTemplate(entityName: string): Promise<string> {
-  const {
-    camelCase,
-    humanReadable,
-    kebabCase,
-    pascalCase,
-    snakeCase,
-    upperCase,
-  } = allCases(entityName)
-
+export async function getIndexViewTemplate(entityName: EntityCasing): Promise<string> {
   await addTranslation({
-    key: `module.${camelCase}.label.plural`,
-    value: `${CaseTransformer.toHumanReadable(toPlural(entityName))}`,
+    key: `module.${entityName.camelCase}.label.plural`,
+    value: `${toPlural(entityName.humanReadable)}`,
   })
 
   await addTranslation({
-    key: `module.${camelCase}.create`,
-    value: `Create ${humanReadable}`,
+    key: `module.${entityName.camelCase}.create`,
+    value: `Create ${entityName.humanReadable}`,
   })
 
   addTestId({
-    key: `${toPlural(upperCase)}.OVERVIEW.CREATE_BUTTON`,
-    value: `${kebabCase}-overview-create-button`,
+    key: `${toPlural(entityName.upperCase)}.OVERVIEW.CREATE_BUTTON`,
+    value: `${entityName.kebabCase}-overview-create-button`,
   })
 
   const template = `
@@ -44,30 +32,30 @@ import PaginationSearchField from '@/components/pagination/PaginationSearchField
 import TableErrorState from '@/components/table/TableErrorState.vue'
 import { useDocumentTitle } from '@/composables/document-title/documentTitle.composable'
 import { TEST_ID } from '@/constants/testId.constant.ts'
-import type { ${pascalCase}IndexPagination } from '@/models/${kebabCase}/index/${camelCase}IndexPagination.model'
-import { use${pascalCase}IndexQuery } from '@/modules/${kebabCase}/api/queries/${camelCase}Index.query'
-import ${pascalCase}OverviewTable from '@/modules/${kebabCase}/features/overview/components/${pascalCase}OverviewTable.vue'
+import type { ${entityName.pascalCase}IndexPagination } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexPagination.model'
+import { use${entityName.pascalCase}IndexQuery } from '@/modules/${entityName.kebabCase}/api/queries/${entityName.camelCase}Index.query'
+import ${entityName.pascalCase}OverviewTable from '@/modules/${entityName.kebabCase}/features/overview/components/${entityName.pascalCase}OverviewTable.vue'
 
 const i18n = useI18n()
 const documentTitle = useDocumentTitle()
 
-documentTitle.set(i18n.t('module.${snakeCase}.label.plural'))
+documentTitle.set(i18n.t('module.${entityName.snakeCase}.label.plural'))
 
-const pagination = usePagination<${pascalCase}IndexPagination>({
+const pagination = usePagination<${entityName.pascalCase}IndexPagination>({
   isRouteQueryEnabled: true,
-  key: '${camelCase}Index',
+  key: '${entityName.camelCase}Index',
 })
 
 const {
   isLoading,
   data,
   error,
-} = use${pascalCase}IndexQuery(pagination.paginationOptions)
+} = use${entityName.pascalCase}IndexQuery(pagination.paginationOptions)
 </script>
 
 <template>
   <PageLayout
-    :title="i18n.t('module.${snakeCase}.label.plural')"
+    :title="i18n.t('module.${entityName.snakeCase}.label.plural')"
     :no-content-padding="true"
   >
     <template #actions>
@@ -77,11 +65,11 @@ const {
       />
 
       <VcRouterLinkButton
-        :to="{ name: '${kebabCase}-create' }"
-        :test-id="TEST_ID.${toPlural(upperCase)}.OVERVIEW.CREATE_BUTTON"
+        :to="{ name: '${entityName.kebabCase}-create' }"
+        :test-id="TEST_ID.${toPlural(entityName.upperCase)}.OVERVIEW.CREATE_BUTTON"
         color="primary"
       >
-        {{ i18n.t('module.${snakeCase}.create') }}
+        {{ i18n.t('module.${entityName.snakeCase}.create') }}
       </VcRouterLinkButton>
     </template>
 
@@ -91,7 +79,7 @@ const {
         :error="error"
       />
 
-      <${pascalCase}OverviewTable
+      <${entityName.pascalCase}OverviewTable
         v-else
         :data="data"
         :is-loading="isLoading"

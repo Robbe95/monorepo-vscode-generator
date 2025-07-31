@@ -1,3 +1,4 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { createTemplate } from '#utils/template/createTemplate.utils.ts'
 
 import {
@@ -8,7 +9,7 @@ import { getCreateCrudCreateFormTemplate } from './templates/createCrudCreateFor
 import { getCreateCrudCreateViewTemplate } from './templates/createCrudCreateView.template.ts'
 
 export interface CreateCrudIndexViewParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudCreateTemplates({

@@ -1,11 +1,13 @@
+import { getCreateCrudDetailModelFile } from '#commands/create-crud/detail/createCrudDetail.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudUpdateParams } from './createCrudUpdate'
-import { getCreateCrudUpdateTransformerFile } from './createCrudUpdate.files'
+import {
+  getCreateCrudUpdateFormModelFile,
+  getCreateCrudUpdateTransformerFile,
+} from './createCrudUpdate.files'
 
 export async function createCrudUpdateTransformer({
   entityName,
@@ -14,77 +16,60 @@ export async function createCrudUpdateTransformer({
     name, path,
   } = getCreateCrudUpdateTransformerFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  fileManipulator
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudDetailModelFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}Detail`,
+      ],
     })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/update/${entityName}UpdateForm.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
-    ],
-  })
-
-  sourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Detail`,
-    ],
-  })
-
-  sourceFile.addClass({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateTransformer`,
-    methods: [
-      {
-        isStatic: true,
-        name: 'toDto',
-        leadingTrivia: `// TODO Update the type of form to the correct form type for ${CaseTransformer.toPascalCase(entityName)}UpdateTransformer`,
-        parameters: [
-          {
-            name: 'form',
-            type: `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
-          },
-        ],
-        returnType: `any`, // Update this to the correct DTO type
-        statements: [
-          `return { /* TODO Map form properties to DTO properties */ }`,
-        ],
-      },
-      {
-        isStatic: true,
-        name: 'toForm',
-        parameters: [
-          {
-            name: `${CaseTransformer.toCamelCase(entityName)}`,
-            type: `${CaseTransformer.toPascalCase(entityName)}Detail`, // Update this to the correct DTO type
-          },
-        ],
-        returnType: `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
-        statements: [
-          `return { 
-            uuid: ${CaseTransformer.toCamelCase(entityName)}.uuid,
-            /* TODO Map dto properties to form properties */
-           }`,
-        ],
-      },
-    ],
-  })
-
-  await sourceFile.save()
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudUpdateFormModelFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}UpdateForm`,
+      ],
+    })
+    .addClassMethod({
+      isStatic: true,
+      name: 'toDto',
+      comment: `// TODO Update the type of form to the correct form type for ${entityName.pascalCase}UpdateTransformer`,
+      nameClass: `${entityName.pascalCase}UpdateTransformer`,
+      parameters: [
+        {
+          name: 'form',
+          type: `${entityName.pascalCase}UpdateForm`,
+        },
+      ],
+      returnType: `any`, // Update this to the correct DTO type
+      statements: [
+        `return { /* TODO Map form properties to DTO properties */ }`,
+      ],
+    })
+    .addClassMethod({
+      isStatic: true,
+      name: 'toForm',
+      nameClass: `${entityName.pascalCase}UpdateTransformer`,
+      parameters: [
+        {
+          name: `${entityName.camelCase}`,
+          type: `${entityName.pascalCase}Detail`, // Update this to the correct DTO type
+        },
+      ],
+      returnType: `${entityName.pascalCase}UpdateForm`,
+      statements: [
+        `return { 
+          uuid: ${entityName.camelCase}.uuid,
+          /* TODO Map dto properties to form properties */
+         }`,
+      ],
+    })
+    .save()
 }

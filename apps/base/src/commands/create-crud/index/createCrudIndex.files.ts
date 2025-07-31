@@ -1,47 +1,41 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudIndexModelFile(entityName: string) {
+export function getCreateCrudIndexModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Index.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/index`,
+    name: `${entityName.camelCase}Index.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/index`,
   }
 }
-export function getCreateCrudIndexModelDtoFile(entityName: string) {
+export function getCreateCrudIndexTransformerFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}IndexDto.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/index`,
+    name: `${entityName.camelCase}Index.transformer.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/index`,
   }
 }
-export function getCreateCrudIndexTransformerFile(entityName: string) {
+export function getCreateCrudIndexQueryOptionsModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Index.transformer.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/index`,
-  }
-}
-export function getCreateCrudIndexQueryOptionsModelFile(entityName: string) {
-  return {
-    name: `${entityName}IndexQueryOptions.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/index`,
+    name: `${entityName.camelCase}IndexQueryOptions.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/index`,
   }
 }
 
-export function getCreateCrudIndexApiQueryFile(entityName: string) {
+export function getCreateCrudIndexApiQueryFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Index.query.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/queries`,
+    name: `${entityName.camelCase}Index.query.ts`,
+    path: `src/modules/${entityName.kebabCase}/api/queries`,
   }
 }
 
-export function getCreateCrudIndexViewFile(entityName: string) {
+export function getCreateCrudIndexViewFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}IndexView.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/index/views`,
+    name: `${entityName.pascalCase}IndexView.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/index/views`,
   }
 }
 
-export function getCreateCrudIndexViewTableFile(entityName: string) {
+export function getCreateCrudIndexViewTableFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}IndexTable.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/index/components`,
+    name: `${entityName.pascalCase}IndexTable.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/index/components`,
   }
 }

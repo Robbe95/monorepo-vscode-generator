@@ -1,11 +1,13 @@
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudDetailParams } from './createCrudDetail'
-import { getCreateCrudDetailTransformerFile } from './createCrudDetail.files'
+import {
+  getCreateCrudDetailModelFile,
+  getCreateCrudDetailTransformerFile,
+} from './createCrudDetail.files'
 
 export async function createCrudDetailTransformer({
   entityName,
@@ -14,64 +16,47 @@ export async function createCrudDetailTransformer({
     name, path,
   } = getCreateCrudDetailTransformerFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
-
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
-    })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclarations([
-    {
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
-      namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Detail`,
-      ],
-    },
-    {
-      isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
-      namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
-      ],
-    },
-  ])
-
-  sourceFile.addClass({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}DetailTransformer`,
-    methods: [
-      {
-        isStatic: true,
-        name: 'fromDto',
-        parameters: [
-          {
-            name: 'dto',
-            type: `any`,
-          },
-        ],
-        returnType: `${CaseTransformer.toPascalCase(entityName)}Detail`,
-        statements: [
-          `
-            return {
-              uuid: dto.uuid as ${CaseTransformer.toPascalCase(entityName)}Uuid,
-              // TODO Map other properties from dto to ${CaseTransformer.toPascalCase(entityName)}Detail
-            }
-          `,
-        ],
-      },
-    ],
   })
 
-  await sourceFile.save()
+  fileManipulator
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudDetailModelFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}Detail`,
+      ],
+    })
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}Uuid`,
+      ],
+    })
+    .addClass({
+      isExported: true,
+      name: `${entityName.pascalCase}DetailTransformer`,
+    })
+    .addClassMethod({
+      isStatic: true,
+      name: 'fromDto',
+      nameClass: `${entityName.pascalCase}DetailTransformer`,
+      parameters: [
+        {
+          name: 'dto',
+          type: 'any',
+        },
+      ],
+      returnType: `${entityName.pascalCase}Detail`,
+      statements: [
+        `return {
+          uuid: dto.uuid as ${entityName.pascalCase}Uuid,
+          // TODO Map other properties from dto to ${entityName.pascalCase}Detail
+        }`,
+      ],
+    })
+    .save()
 }

@@ -1,8 +1,8 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudRoutesFile(entityName: string) {
+export function getCreateCrudRoutesFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}.routes.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/routes`,
+    name: `${entityName.camelCase}.routes.ts`,
+    path: `src/modules/${entityName.kebabCase}/routes`,
   }
 }

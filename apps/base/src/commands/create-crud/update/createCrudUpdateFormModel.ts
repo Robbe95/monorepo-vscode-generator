@@ -1,10 +1,7 @@
-import { VariableDeclarationKind } from 'ts-morph'
-
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import type { CreateCrudUpdateParams } from './createCrudUpdate'
 import { getCreateCrudUpdateFormModelFile } from './createCrudUpdate.files'
@@ -15,57 +12,37 @@ export async function createCrudUpdateFormModel({
   const {
     name, path,
   } = getCreateCrudUpdateFormModelFile(entityName)
-
-  const sourceFileResponse = await tryCatch(createEmptyFile({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
+  fileManipulator
+    .addImport({
+      moduleSpecifier: `zod`,
+      namedImports: [
+        `z`,
+      ],
     })
-
-    return
-  }
-
-  const sourceFile = sourceFileResponse.data
-
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `zod`,
-    namedImports: [
-      `z`,
-    ],
-  })
-
-  sourceFile.addImportDeclaration({
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
-    namedImports: [
-      `${entityName}UuidSchema`,
-    ],
-  })
-
-  sourceFile.addVariableStatement({
-    isExported: true,
-    declarationKind: VariableDeclarationKind.Const,
-    declarations: [
-      {
-        name: `${entityName}UpdateFormSchema`,
-        initializer: `z.object({
-          uuid: ${entityName}UuidSchema,
-        })`,
-      },
-    ],
-    leadingTrivia: `// TODO Update z.object to the correct schema for ${entityName}UpdateForm`,
-  })
-
-  sourceFile.addTypeAlias({
-    isExported: true,
-    name: `${CaseTransformer.toPascalCase(entityName)}UpdateForm`,
-    type: `z.infer<typeof ${entityName}UpdateFormSchema>`,
-  })
-
-  sourceFile.saveSync()
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
+      namedImports: [
+        `${entityName.camelCase}UuidSchema`,
+      ],
+    })
+    .addVariable({
+      isExported: true,
+      name: `${entityName.camelCase}UpdateFormSchema`,
+      comment: `// TODO Update z.object to the correct schema for ${entityName.camelCase}UpdateForm`,
+      initializer: `z.object({
+        uuid: ${entityName.camelCase}UuidSchema,
+      })`,
+    })
+    .addType({
+      isExported: true,
+      name: `${entityName.pascalCase}UpdateForm`,
+      type: `z.infer<typeof ${entityName.camelCase}UpdateFormSchema>`,
+    })
+    .save()
 }

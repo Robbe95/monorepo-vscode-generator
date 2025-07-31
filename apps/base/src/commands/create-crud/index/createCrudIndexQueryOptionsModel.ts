@@ -1,5 +1,4 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import type { CreateCrudIndexParams } from './createCrudIndex'
@@ -17,12 +16,10 @@ export async function createCrudIndexQueryOptionsModel({
     path,
   })
 
-  const entityCasing = allCases(entityName)
-
   fileManipulator.addType({
     isExported: true,
-    name: `${entityCasing.pascalCase}IndexQueryOptions`,
-    comment: `// TODO Define the query options for ${entityCasing.pascalCase}Index.`,
+    name: `${entityName.pascalCase}IndexQueryOptions`,
+    comment: `// TODO Define the query options for ${entityName.pascalCase}Index.`,
     type: `any`,
   }).save()
 }

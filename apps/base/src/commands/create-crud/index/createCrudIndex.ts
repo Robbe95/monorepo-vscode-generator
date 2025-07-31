@@ -1,3 +1,5 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+
 import { createCrudIndexApiQuery } from './createCrudIndexApiQuery'
 import { createCrudIndexModel } from './createCrudIndexModel'
 import { createCrudIndexQueryOptionsModel } from './createCrudIndexQueryOptionsModel'
@@ -5,7 +7,7 @@ import { createCrudIndexTransformer } from './createCrudIndexTransformer'
 import { createCrudIndexView } from './createCrudIndexView'
 
 export interface CreateCrudIndexParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudIndex({

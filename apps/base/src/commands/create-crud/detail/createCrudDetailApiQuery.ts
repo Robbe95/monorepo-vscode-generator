@@ -1,235 +1,199 @@
 import { getCreateCrudServiceFile } from '#commands/create-crud/service/createCrudService.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
-import { createEmptyFile } from '#utils/files/createEmptyFile.utils.ts'
-import { skipFile } from '#utils/try-catch/skipFile.ts'
-import { tryCatch } from '#utils/try-catch/tryCatch.utils.ts'
-import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
-import { getCreateCrudDetailApiQueryFile } from './createCrudDetail.files'
+import {
+  getCreateCrudDetailApiQueryFile,
+  getCreateCrudDetailModelFile,
+  getCreateCrudDetailTransformerFile,
+} from './createCrudDetail.files'
 
 export async function createCrudDetailApiQuery({
   entityName,
 }: {
-  entityName: string
+  entityName: EntityCasing
 }) {
   await addToServiceFile(entityName)
   await createQueryFile(entityName)
 }
 
-async function addToServiceFile(entityName: string) {
+async function addToServiceFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudServiceFile(entityName)
 
-  const serviceSourceFile = await getTsSourceFile({
-    filePath: `${path}/${name}`,
+  const fileManipulator = await FileManipulator.create({
+    name,
     projectPath: BASE_PATH,
+    path,
   })
 
-  const existingMethod = serviceSourceFile
-    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
-    .getMethod('getByUuid')
-
-  if (existingMethod) {
-    return
-  }
-
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Detail`,
-    ],
-  })
-
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: '@wisemen/vue-core-components',
-    namedImports: [
-      'PaginatedData',
-    ],
-  })
-
-  serviceSourceFile.addImportDeclaration({
-    isTypeOnly: true,
-    moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
-    namedImports: [
-      `${CaseTransformer.toPascalCase(entityName)}Uuid`,
-    ],
-  })
-
-  serviceSourceFile
-    .addImportDeclaration({
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.transformer.ts`,
+  fileManipulator
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudDetailModelFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}DetailTransformer`,
+        `${entityName.pascalCase}Detail`,
       ],
     })
-
-  serviceSourceFile
-    .getClassOrThrow(`${CaseTransformer.toPascalCase(entityName)}Service`)
-    .addMethod({
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: '@wisemen/vue-core-components',
+      namedImports: [
+        'PaginatedData',
+      ],
+    })
+    .addImport({
+      isTypeOnly: true,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}Uuid`,
+      ],
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudDetailTransformerFile(entityName)),
+      namedImports: [
+        `${entityName.pascalCase}DetailTransformer`,
+      ],
+    })
+    .addClassMethod({
       isAsync: true,
       isStatic: true,
       name: `getByUuid`,
-      leadingTrivia: `// TODO Update the update logic to fetch a single ${CaseTransformer.toPascalCase(entityName)}Detail item by UUID.`,
+      comment: `// TODO Update the getByUuid logic to fetch a single ${entityName.pascalCase}Detail item by UUID.`,
+      nameClass: `${entityName.pascalCase}Service`,
       parameters: [
         {
           name: 'uuid',
-          type: `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+          type: `${entityName.pascalCase}Uuid`,
         },
       ],
-      returnType: `Promise<${CaseTransformer.toPascalCase(entityName)}Detail>`,
+      returnType: `Promise<${entityName.pascalCase}Detail>`,
       statements: [],
     })
-
-  serviceSourceFile.saveSync()
+    .save()
 }
 
-async function createQueryFile(entityName: string) {
+async function createQueryFile(entityName: EntityCasing) {
   const {
     name, path,
   } = getCreateCrudDetailApiQueryFile(entityName)
 
-  const sourceFileResponse = await tryCatch(createEmptyFile ({
+  const fileManipulator = await FileManipulator.create({
     name,
     projectPath: BASE_PATH,
     path,
-  }))
+  })
 
-  if (sourceFileResponse.error) {
-    await skipFile({
-      name,
-      path,
-    })
-
-    return
-  }
-
-  const querySourceFile = sourceFileResponse.data
-
-  querySourceFile.addImportDeclarations([
-    {
+  fileManipulator
+    .addImport({
       isTypeOnly: true,
       moduleSpecifier: 'vue',
       namedImports: [
         'ComputedRef',
       ],
-    },
-    {
+    })
+    .addImport({
       moduleSpecifier: 'vue',
       namedImports: [
         'toValue',
       ],
-    },
-    {
+    })
+    .addImport({
       isTypeOnly: true,
       moduleSpecifier: '@wisemen/vue-core-query',
       namedImports: [
-        'UseQueryReturnType',
         'UseQueryOptions',
       ],
-    },
-    {
+    })
+    .addImport({
       moduleSpecifier: '@wisemen/vue-core-query',
       namedImports: [
         'useQuery',
       ],
-    },
-    {
-      isTypeOnly: true,
-      moduleSpecifier: '@/composables/prefetch-query/prefetchQuery.composable',
-      namedImports: [
-        'PrefetchQueryReturnType',
-      ],
-    },
-    {
+    })
+    .addImport({
       moduleSpecifier: '@/composables/prefetch-query/prefetchQuery.composable',
       namedImports: [
         'usePrefetchQuery',
       ],
-    },
-    {
+    })
+    .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/detail/${entityName}Detail.model.ts`,
+      moduleSpecifier: toFileAlias(getCreateCrudDetailModelFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Detail`,
+        `${entityName.pascalCase}Detail`,
       ],
-    },
-    {
+    })
+    .addImport({
       moduleSpecifier: '@/utils/time.util',
       namedImports: [
         'TimeUtil',
       ],
-    },
-    {
+    })
+    .addImport({
       isTypeOnly: true,
-      moduleSpecifier: `@/models/${CaseTransformer.toKebabCase(entityName)}/${entityName}Uuid.model.ts`,
+      moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Uuid`,
+        `${entityName.pascalCase}Uuid`,
       ],
-    },
-    {
-      moduleSpecifier: `@/modules/${CaseTransformer.toKebabCase(entityName)}/api/services/${CaseTransformer.toKebabCase(entityName)}.service.ts`,
+    })
+    .addImport({
+      moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
       namedImports: [
-        `${CaseTransformer.toPascalCase(entityName)}Service`,
+        `${entityName.pascalCase}Service`,
       ],
-    },
-  ])
-
-  querySourceFile.addFunction({
-    isExported: true,
-    name: `${entityName}DetailQuery`,
-    parameters: [
-      {
-        name: `${entityName}Uuid`,
-        type: `ComputedRef<${CaseTransformer.toPascalCase(entityName)}Uuid>`,
-      },
-    ],
-    returnType: `UseQueryOptions<${CaseTransformer.toPascalCase(entityName)}Detail>`,
-    statements: [
-      `return {
-        staleTime: TimeUtil.seconds(30),
-        queryFn: () => ${CaseTransformer.toPascalCase(entityName)}Service.getByUuid(toValue(${entityName}Uuid)),
-        queryKey: {
-          ${CaseTransformer.toKebabCase(entityName)}Detail: {
-            ${entityName}Uuid,
-          },
+    })
+    .addFunction({
+      isExported: true,
+      name: `${entityName.pascalCase}DetailQuery`,
+      parameters: [
+        {
+          name: `${entityName.camelCase}Uuid`,
+          type: `ComputedRef<${entityName.pascalCase}Uuid>`,
         },
-      }`,
-    ],
-  })
-
-  querySourceFile.addFunction({
-    isExported: true,
-    name: `use${CaseTransformer.toPascalCase(entityName)}DetailQuery`,
-    parameters: [
-      {
-        name: `${entityName}Uuid`,
-        type: `ComputedRef<${CaseTransformer.toPascalCase(entityName)}Uuid>`,
-      },
-    ],
-    returnType: `UseQueryReturnType<${CaseTransformer.toPascalCase(entityName)}Detail>`,
-    statements: [
-      `return useQuery(${entityName}DetailQuery(${entityName}Uuid))`,
-    ],
-  })
-
-  querySourceFile.addFunction({
-    isExported: true,
-    name: `use${CaseTransformer.toPascalCase(entityName)}DetailPrefetchQuery`,
-    parameters: [
-      {
-        name: `${entityName}Uuid`,
-        type: `ComputedRef<${CaseTransformer.toPascalCase(entityName)}Uuid>`,
-      },
-    ],
-    returnType: `PrefetchQueryReturnType`,
-    statements: [
-      `return usePrefetchQuery(${entityName}DetailQuery(${entityName}Uuid))`,
-    ],
-  })
-
-  querySourceFile.saveSync()
+      ],
+      returnType: `UseQueryOptions<${entityName.pascalCase}Detail>`,
+      statements: [
+        `return {
+          staleTime: TimeUtil.seconds(30),
+          queryFn: () => ${entityName.pascalCase}Service.getByUuid(toValue(${entityName.camelCase}Uuid)),
+          queryKey: {
+            ${entityName.kebabCase}Detail: {
+              ${entityName.camelCase}Uuid,
+            },
+          },
+        }`,
+      ],
+    })
+    .addFunction({
+      isExported: true,
+      name: `use${entityName.pascalCase}DetailQuery`,
+      parameters: [
+        {
+          name: `${entityName.camelCase}Uuid`,
+          type: `ComputedRef<${entityName.pascalCase}Uuid>`,
+        },
+      ],
+      statements: [
+        `return useQuery(${entityName.pascalCase}DetailQuery(${entityName.camelCase}Uuid))`,
+      ],
+    })
+    .addFunction({
+      isExported: true,
+      name: `use${entityName.pascalCase}DetailPrefetchQuery`,
+      parameters: [
+        {
+          name: `${entityName.camelCase}Uuid`,
+          type: `ComputedRef<${entityName.pascalCase}Uuid>`,
+        },
+      ],
+      statements: [
+        `return usePrefetchQuery(${entityName.pascalCase}DetailQuery(${entityName.camelCase}Uuid))`,
+      ],
+    })
+    .save()
 }

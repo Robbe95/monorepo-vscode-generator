@@ -1,5 +1,5 @@
 import { getConfig } from '#config/getConfig.ts'
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { getInputSelect } from '#utils/input/getInputSelect.utils.ts'
 import { getInputString } from '#utils/input/getInputString.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
@@ -19,7 +19,7 @@ export async function createCrudCommand() {
 
   await getConfig()
 
-  const entityName = CaseTransformer.toCamelCase(await getInputString({
+  const entityName = allCases(await getInputString({
     title: 'Create new CRUD',
     prompt: 'Enter the name of the new entity (in singular)',
   }))

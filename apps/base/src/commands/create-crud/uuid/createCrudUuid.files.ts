@@ -1,8 +1,8 @@
-import { CaseTransformer } from "#utils/casing/caseTransformer.utils.ts";
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudUuidModelFile(entityName: string) {
+export function getCreateCrudUuidModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Uuid.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}`,
+    name: `${entityName.camelCase}Uuid.model.ts`,
+    path: `src/models/${entityName.kebabCase}`,
   }
 }

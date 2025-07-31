@@ -1,15 +1,14 @@
 import { getCreateCrudCreateFormFile } from '#commands/create-crud/create/createCrudCreate.files.ts'
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { toVueImport } from '#utils/files/toVueImport.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getCreateCrudCreateViewTemplate(entityName: string) {
-  const entityCasing = allCases(entityName)
+export async function getCreateCrudCreateViewTemplate(entityName: EntityCasing) {
   const createFormFile = getCreateCrudCreateFormFile(entityName)
 
   await addTranslation({
-    key: `module.${entityCasing.snakeCase}.create.title`,
-    value: `Create ${entityCasing.humanReadable}`,
+    key: `module.${entityName.snakeCase}.create.title`,
+    value: `Create ${entityName.humanReadable}`,
   })
 
   return `<script setup lang="ts">
@@ -22,8 +21,8 @@ const i18n = useI18n()
 </script>
 
 <template>
-  <PageLayout :title="i18n.t('module.${entityCasing.snakeCase}.create.title')">
-    <${entityCasing.pascalCase}CreateForm />
+  <PageLayout :title="i18n.t('module.${entityName.snakeCase}.create.title')">
+    <${entityName.pascalCase}CreateForm />
   </PageLayout>
 </template>
 `

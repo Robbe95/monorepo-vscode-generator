@@ -1,47 +1,47 @@
-import { CaseTransformer } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 
-export function getCreateCrudDetailModelFile(entityName: string) {
+export function getCreateCrudDetailModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Detail.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/detail`,
+    name: `${entityName.camelCase}Detail.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/detail`,
   }
 }
-export function getCreateCrudDetailModelDtoFile(entityName: string) {
+export function getCreateCrudDetailModelDtoFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}DetailDto.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/detail`,
+    name: `${entityName.camelCase}DetailDto.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/detail`,
   }
 }
-export function getCreateCrudDetailTransformerFile(entityName: string) {
+export function getCreateCrudDetailTransformerFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}Detail.transformer.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/detail`,
+    name: `${entityName.camelCase}Detail.transformer.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/detail`,
   }
 }
-export function getCreateCrudDetailQueryOptionsModelFile(entityName: string) {
+export function getCreateCrudDetailQueryOptionsModelFile(entityName: EntityCasing) {
   return {
-    name: `${entityName}DetailQueryOptions.model.ts`,
-    path: `src/models/${CaseTransformer.toKebabCase(entityName)}/detail`,
-  }
-}
-
-export function getCreateCrudDetailApiQueryFile(entityName: string) {
-  return {
-    name: `${entityName}Detail.query.ts`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/api/queries`,
+    name: `${entityName.camelCase}DetailQueryOptions.model.ts`,
+    path: `src/modules/${entityName.kebabCase}/models/detail`,
   }
 }
 
-export function getCreateCrudDetailViewFile(entityName: string) {
+export function getCreateCrudDetailApiQueryFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}DetailView.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/detail/views`,
+    name: `${entityName.camelCase}Detail.query.ts`,
+    path: `src/modules/${entityName.kebabCase}/api/queries`,
   }
 }
 
-export function getCreateCrudDetailDataProviderFile(entityName: string) {
+export function getCreateCrudDetailViewFile(entityName: EntityCasing) {
   return {
-    name: `${CaseTransformer.toPascalCase(entityName)}DetailDataProvider.vue`,
-    path: `src/modules/${CaseTransformer.toKebabCase(entityName)}/features/detail/views`,
+    name: `${entityName.pascalCase}DetailView.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/detail/views`,
+  }
+}
+
+export function getCreateCrudDetailDataProviderFile(entityName: EntityCasing) {
+  return {
+    name: `${entityName.pascalCase}DetailDataProvider.vue`,
+    path: `src/modules/${entityName.kebabCase}/features/detail/views`,
   }
 }

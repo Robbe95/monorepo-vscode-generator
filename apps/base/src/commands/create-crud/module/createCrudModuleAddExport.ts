@@ -1,11 +1,12 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 
 import { getCreateCrudModuleIndexFile } from './createCrudModule.files'
 
 export interface CreateCrudModuleAddExportParams {
   isTypeOnly?: boolean
-  entityName: string
+  entityName: EntityCasing
   moduleSpecifier: string
   namedExports: string[]
 }

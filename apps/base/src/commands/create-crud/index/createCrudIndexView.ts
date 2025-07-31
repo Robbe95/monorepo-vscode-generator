@@ -1,3 +1,4 @@
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { createTemplate } from '#utils/template/createTemplate.utils.ts'
 
 import {
@@ -8,7 +9,7 @@ import { getIndexTableTemplate } from './templates/indexTable.template'
 import { getIndexViewTemplate } from './templates/indexView.template'
 
 export interface CreateCrudIndexViewParams {
-  entityName: string
+  entityName: EntityCasing
 }
 
 export async function createCrudIndexView({

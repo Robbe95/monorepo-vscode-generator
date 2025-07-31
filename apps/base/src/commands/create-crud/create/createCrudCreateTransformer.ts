@@ -1,5 +1,4 @@
 import { BASE_PATH } from '#constants/paths.constants.ts'
-import { getCases } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
 import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
@@ -21,7 +20,6 @@ export async function createCrudCreateTransformer({
     projectPath: BASE_PATH,
     path,
   })
-  const entityCasings = getCases(entityName)
   const createFormFile = getCreateCrudCreateFormModelFile(entityName)
 
   fileManipulator
@@ -29,21 +27,21 @@ export async function createCrudCreateTransformer({
       isTypeOnly: true,
       moduleSpecifier: toFileAlias(createFormFile),
       namedImports: [
-        `${entityCasings.pascalCase}CreateForm`,
+        `${entityName.pascalCase}CreateForm`,
       ],
     })
     .addClass({
       isExported: true,
-      name: `${entityCasings.pascalCase}CreateTransformer`,
+      name: `${entityName.pascalCase}CreateTransformer`,
     })
     .addClassMethod({
       isStatic: true,
       name: 'toDto',
-      nameClass: `${entityCasings.pascalCase}CreateTransformer`,
+      nameClass: `${entityName.pascalCase}CreateTransformer`,
       parameters: [
         {
           name: 'form',
-          type: `${entityCasings.pascalCase}CreateForm`,
+          type: `${entityName.pascalCase}CreateForm`,
         },
       ],
       returnType: `any`, // Update this to the correct DTO type

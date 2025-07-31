@@ -1,30 +1,21 @@
-import { allCases } from '#utils/casing/caseTransformer.utils.ts'
+import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
 
-export async function getIndexTableTemplate(entityName: string) {
-  const {
-    camelCase,
-    humanReadable,
-    kebabCase,
-    pascalCase,
-    snakeCase,
-    upperCase,
-  } = allCases(entityName)
-
+export async function getIndexTableTemplate(entityName: EntityCasing) {
   await addTranslation({
-    key: `module.${snakeCase}.uuid`,
-    value: `${humanReadable} UUID`,
+    key: `module.${entityName.snakeCase}.uuid`,
+    value: `${entityName.humanReadable} UUID`,
   })
 
   addTestId({
-    key: `${toPlural(upperCase)}.TABLE.NAME_LINK`,
-    value: `${kebabCase}-overview-table-name-link`,
+    key: `${toPlural(entityName.upperCase)}.TABLE.NAME_LINK`,
+    value: `${entityName.kebabCase}-overview-table-name-link`,
   })
   addTestId({
-    key: `${toPlural(upperCase)}.TABLE.CONTAINER`,
-    value: `${kebabCase}-overview-table-container`,
+    key: `${toPlural(entityName.upperCase)}.TABLE.CONTAINER`,
+    value: `${entityName.kebabCase}-overview-table-container`,
   })
 
   const template = `
@@ -44,27 +35,27 @@ import { useI18n } from 'vue-i18n'
 
 import AppErrorState from '@/components/app/error-state/AppErrorState.vue'
 import { TEST_ID } from '@/constants/testId.constant'
-import type { ${pascalCase}Index } from '@/models/${kebabCase}/index/${camelCase}Index.model'
-import type { ${pascalCase}IndexQueryOptions } from '@/models/${kebabCase}/index/${camelCase}IndexQueryOptions.model'
-import ${pascalCase}OverviewTableNameCell from '@/modules/${kebabCase}/features/overview/components/${pascalCase}OverviewTableNameCell.vue'
+import type { ${entityName.pascalCase}Index } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}Index.model'
+import type { ${entityName.pascalCase}IndexQueryOptions } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexQueryOptions.model'
+import ${entityName.pascalCase}OverviewTableNameCell from '@/modules/${entityName.kebabCase}/features/overview/components/${entityName.pascalCase}OverviewTableNameCell.vue'
 
 const props = defineProps<{
   isLoading: boolean
-  data: PaginatedData<${pascalCase}Index> | null
+  data: PaginatedData<${entityName.pascalCase}Index> | null
   error: unknown | null
-  pagination: Pagination<${pascalCase}IndexQueryOptions>
+  pagination: Pagination<${entityName.pascalCase}IndexQueryOptions>
 }>()
 
 const i18n = useI18n()
 
-const columns = computed<TableColumn<${pascalCase}Index>[]>(() => [
+const columns = computed<TableColumn<${entityName.pascalCase}Index>[]>(() => [
   {
-    testId: TEST_ID.${toPlural(upperCase)}.TABLE.NAME_LINK,
+    testId: TEST_ID.${toPlural(entityName.upperCase)}.TABLE.NAME_LINK,
     isSortable: true,
-    cell: (${camelCase}): VNode => h(VcTableCell, {
-      ${camelCase},
+    cell: (${entityName.camelCase}): VNode => h(VcTableCell, {
+      ${entityName.camelCase},
     }),
-    headerLabel: i18n.t('module.${snakeCase}.uuid'),
+    headerLabel: i18n.t('module.${entityName.snakeCase}.uuid'),
     key: 'uuid',
   },
 ])
@@ -82,7 +73,7 @@ const columns = computed<TableColumn<${pascalCase}Index>[]>(() => [
     v-else
     :columns="columns"
     :data="props.data"
-    :data-test-id="TEST_ID.${toPlural(upperCase)}.TABLE.CONTAINER"
+    :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.TABLE.CONTAINER"
     :is-first-column-sticky="true"
     :is-loading="props.isLoading"
     :pagination="props.pagination"
