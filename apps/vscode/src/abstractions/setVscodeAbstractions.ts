@@ -4,6 +4,7 @@ import {
   setGetInputStringAbstraction,
   setGetRootFolderAbstraction,
   setLoggerExtraction,
+  setRunCommandAbstraction,
 } from '@repo/base'
 import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils'
 import {
@@ -18,6 +19,7 @@ export function setVscodeAbstractions() {
   setGetInputStringAbstraction(vscodeGetInputString)
   setGetInputSelectAbstraction(vscodeGetInputSelect)
   setGetRootFolderAbstraction(vscodeGetRootFolder)
+  setRunCommandAbstraction(vscodeRunCommand)
 }
 
 function vscodeLogger() {
@@ -121,4 +123,13 @@ function vscodeGetRootFolder(): string {
   }
 
   return rootWorkspacePath
+}
+
+function vscodeRunCommand(command: string): void {
+  const existingTerminal = window.terminals.find((terminal) => terminal.name === 'Wisemen Code Generator')
+  const terminal = existingTerminal ?? window.createTerminal('Wisemen Code Generator')
+
+  terminal.show()
+
+  terminal.sendText(command)
 }

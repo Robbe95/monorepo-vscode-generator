@@ -6,3 +6,7 @@ export function getCreateCrudModuleIndexFile(entityName: EntityCasing) {
     path: `src/modules/${entityName.kebabCase}`,
   }
 }
+
+export function getCreateCrudModuleExportPath(entityName: EntityCasing) {
+  return `@/modules/${entityName.kebabCase}`
+}

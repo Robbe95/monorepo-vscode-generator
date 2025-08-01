@@ -37,6 +37,10 @@ export async function createCrudUpdateTransformer({
         `${entityName.pascalCase}UpdateForm`,
       ],
     })
+    .addClass({
+      isExported: true,
+      name: `${entityName.pascalCase}UpdateTransformer`,
+    })
     .addClassMethod({
       isStatic: true,
       name: 'toDto',

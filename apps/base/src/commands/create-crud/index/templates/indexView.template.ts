@@ -21,7 +21,7 @@ export async function getIndexViewTemplate(entityName: EntityCasing): Promise<st
     value: `Create ${entityName.humanReadable}`,
   })
 
-  addTestId({
+  await addTestId({
     key: `${toPlural(entityName.upperCase)}.OVERVIEW.CREATE_BUTTON`,
     value: `${entityName.kebabCase}-overview-create-button`,
   })
@@ -38,12 +38,19 @@ export async function getIndexViewTemplate(entityName: EntityCasing): Promise<st
   const indexModelImport = toTsImport({
     ...getCreateCrudIndexApiQueryFile(entityName),
     methodNames: [
-      `${entityName.pascalCase}Index`,
+      `${entityName.camelCase}IndexQuery`,
     ],
   })
 
   const tableImport = toVueImport({
     ...getCreateCrudIndexViewTableFile(entityName),
+  })
+
+  const indexQueryImport = toTsImport({
+    ...getCreateCrudIndexApiQueryFile(entityName),
+    methodNames: [
+      `use${entityName.pascalCase}IndexQuery`,
+    ],
   })
 
   const template = `
@@ -59,6 +66,7 @@ import PaginationSearchField from '@/components/pagination/PaginationSearchField
 import TableErrorState from '@/components/table/TableErrorState.vue'
 import { useDocumentTitle } from '@/composables/document-title/documentTitle.composable'
 import { TEST_ID } from '@/constants/testId.constant.ts'
+${indexQueryImport}
 ${indexQueryOptionsModelImport}
 ${indexModelImport}
 ${tableImport}
@@ -106,7 +114,7 @@ const {
         :error="error"
       />
 
-      <${entityName.pascalCase}OverviewTable
+      <${entityName.pascalCase}IndexTable
         v-else
         :data="data"
         :is-loading="isLoading"

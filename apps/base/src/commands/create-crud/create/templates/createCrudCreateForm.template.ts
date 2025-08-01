@@ -54,7 +54,7 @@ export async function getCreateCrudCreateFormTemplate(entityName: EntityCasing) 
     value: `${entityName.humanReadable} Info`,
   })
 
-  addTestId({
+  await addTestId({
     key: `${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON`,
     value: `${entityName.kebabCase}-create-form-submit-button`,
   })

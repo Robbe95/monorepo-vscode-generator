@@ -14,11 +14,11 @@ export async function getIndexTableTemplate(entityName: EntityCasing) {
     value: `${entityName.humanReadable} UUID`,
   })
 
-  addTestId({
+  await addTestId({
     key: `${toPlural(entityName.upperCase)}.TABLE.NAME_LINK`,
     value: `${entityName.kebabCase}-overview-table-name-link`,
   })
-  addTestId({
+  await addTestId({
     key: `${toPlural(entityName.upperCase)}.TABLE.CONTAINER`,
     value: `${entityName.kebabCase}-overview-table-container`,
   })

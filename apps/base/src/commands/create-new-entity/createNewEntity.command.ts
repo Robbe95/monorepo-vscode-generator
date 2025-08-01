@@ -2,8 +2,6 @@ import { createNewEntityCollection } from '#commands/create-new-entity/createNew
 import { createNewEntityContract } from '#commands/create-new-entity/createNewEntityContract.ts'
 import { createNewEntityModel } from '#commands/create-new-entity/createNewEntityModel.ts'
 import { createNewEntityPayloadModule } from '#commands/create-new-entity/createNewEntityPayloadModule.ts'
-import { runEslintFix } from '#utils/cli/runEslintFix.utils.ts'
-import { runPayloadGenerate } from '#utils/cli/runPayloadGenerate.utils.ts'
 import { getRootFolder } from '#utils/folders/getRootFolder.utils.ts'
 import { getInputString } from '#utils/input/getInputString.utils.ts'
 import { getLogger } from '#utils/logger/logger.utils.ts'
@@ -43,8 +41,8 @@ export async function createNewEntityCommand() {
     layerName,
   })
 
-  await runPayloadGenerate()
-  await runEslintFix()
+  // await runPayloadGenerate()
+  // await runEslintFix()
 
   logger.info(`Entity ${entityName} created successfully`)
 }

@@ -1,7 +1,7 @@
 import { getCreateCrudDetailModelFile } from '#commands/create-crud/detail/createCrudDetail.files.ts'
 import {
   getCreateCrudUpdateApiMutationFile,
-  getCreateCrudUpdateFormFile,
+  getCreateCrudUpdateFormModelFile,
   getCreateCrudUpdateTransformerFile,
 } from '#commands/create-crud/update/createCrudUpdate.files.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
@@ -19,7 +19,7 @@ export async function getUpdateFormTemplate(entityName: EntityCasing) {
     key: `module.${entityName.snakeCase}.uuid`,
     value: `${entityName.humanReadable}`,
   })
-  addTestId({
+  await addTestId({
     key: `${toPlural(entityName.upperCase)}.FORM.UPDATE_SUBMIT_BUTTON`,
     value: `${entityName.kebabCase}-update-form-submit-button`,
   })
@@ -40,9 +40,9 @@ export async function getUpdateFormTemplate(entityName: EntityCasing) {
   })
 
   const updateFormModelImport = toTsImport({
-    ...getCreateCrudUpdateFormFile(entityName),
+    ...getCreateCrudUpdateFormModelFile(entityName),
     methodNames: [
-      `${entityName.pascalCase}UpdateFormSchema`,
+      `${entityName.camelCase}UpdateFormSchema`,
     ],
   })
 
@@ -134,12 +134,10 @@ const uuid = form.register('uuid')
         <FormFieldset
           :title="i18n.t('module.${entityName.snakeCase}.title')"
         >
-          <FormGrid :cols="2">
-            <VcTextField
-              v-bind="toFormField(uuid)"
-              :label="i18n.t('module.${entityName.snakeCase}.uuid')"
-            />
-          </FormGrid>
+          <VcTextField
+            v-bind="toFormField(uuid)"
+            :label="i18n.t('module.${entityName.snakeCase}.uuid')"
+          />
         </FormFieldset>
       </FormLayout>
   </FormRoot>

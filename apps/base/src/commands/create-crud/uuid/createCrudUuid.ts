@@ -1,6 +1,8 @@
+import { createCrudModuleAddExport } from '#commands/create-crud/module/createCrudModuleAddExport.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 import { FileManipulator } from '#utils/file-manipulator/fileManipulator.ts'
+import { toFileAlias } from '#utils/files/toFileAlias.ts'
 
 import { getCreateCrudUuidModelFile } from './createCrudUuid.files'
 
@@ -39,4 +41,13 @@ export async function createCrudUuid({
       type: `z.infer<typeof ${entityName.camelCase}UuidSchema>`,
     })
     .save()
+
+  createCrudModuleAddExport({
+    isTypeOnly: true,
+    entityName,
+    moduleSpecifier: toFileAlias(getCreateCrudUuidModelFile(entityName)),
+    namedExports: [
+      `${entityName.pascalCase}Uuid`,
+    ],
+  })
 }

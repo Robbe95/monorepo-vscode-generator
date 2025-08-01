@@ -10,17 +10,22 @@ export interface ManipulateImportOptions {
 }
 
 export function manipulateImport({
-  isTypeOnly,
+  isTypeOnly = false,
   file,
   moduleSpecifier,
   namedImports,
 }: ManipulateImportOptions) {
   // check if the import already exists and if the named imports are already present
-  const existingImport = file.getImportDeclaration(moduleSpecifier)
-  const isTypeIsMatching = existingImport?.isTypeOnly() === isTypeOnly
+  const allExistingImports = file.getImportDeclarations()
+  const existingImports = allExistingImports.filter((imp) => imp.getModuleSpecifierValue() === moduleSpecifier)
+  const matchingTypedImport = existingImports.find((imp) => imp.isTypeOnly() === isTypeOnly)
 
-  if (existingImport && isTypeIsMatching) {
-    const existingNamedImports = new Set(existingImport.getNamedImports().map((namedImport) => namedImport.getName()))
+  if (matchingTypedImport) {
+    const existingNamedImports = new Set(
+      matchingTypedImport
+        .getNamedImports()
+        .map((namedImport) => namedImport.getName()),
+    )
     const hasExistingNamedImports = namedImports.every((namedImport) => existingNamedImports.has(namedImport))
 
     if (hasExistingNamedImports) {
@@ -29,7 +34,7 @@ export function manipulateImport({
       return file
     }
 
-    existingImport.addNamedImports(namedImports)
+    matchingTypedImport.addNamedImports(namedImports)
 
     return file
   }

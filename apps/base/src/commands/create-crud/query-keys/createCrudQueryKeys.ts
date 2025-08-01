@@ -3,9 +3,11 @@ import type {
   SourceFile,
 } from 'ts-morph'
 
+import { getCreateCrudModuleExportPath } from '#commands/create-crud/module/createCrudModule.files.ts'
 import { getConfig } from '#config/getConfig.ts'
 import { BASE_PATH } from '#constants/paths.constants.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { manipulateImport } from '#utils/file-manipulator/manipulations/manipulateImport.ts'
 import { getTsSourceFile } from '#utils/ts-morph/getTsSourceFile.utils.ts'
 
 type KeyOption = 'index' | 'update'
@@ -47,9 +49,10 @@ function addIndexQueryKey(
     return
   }
 
-  sourceFile.addImportDeclaration({
+  manipulateImport({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexQueryOptions.model.ts`,
+    file: sourceFile,
+    moduleSpecifier: getCreateCrudModuleExportPath(entityName),
     namedImports: [
       `${entityName.pascalCase}IndexQueryOptions`,
     ],
@@ -78,25 +81,28 @@ function addUpdateQueryKey(
     return
   }
 
-  sourceFile.addImportDeclaration({
+  manipulateImport({
     isTypeOnly: true,
-    moduleSpecifier: 'vue',
+    file: sourceFile,
+    moduleSpecifier: `vue`,
     namedImports: [
-      'ComputedRef',
+      `ComputedRef`,
     ],
   })
 
-  sourceFile.addImportDeclaration({
+  manipulateImport({
     isTypeOnly: true,
-    moduleSpecifier: '@wisemen/vue-core-components',
+    file: sourceFile,
+    moduleSpecifier: `@wisemen/vue-core-components`,
     namedImports: [
-      'PaginationOptions',
+      `PaginationOptions`,
     ],
   })
 
-  sourceFile.addImportDeclaration({
+  manipulateImport({
     isTypeOnly: true,
-    moduleSpecifier: `@/models/${entityName.kebabCase}/${entityName.camelCase}Uuid.model.ts`,
+    file: sourceFile,
+    moduleSpecifier: getCreateCrudModuleExportPath(entityName),
     namedImports: [
       `${entityName.pascalCase}Uuid`,
     ],

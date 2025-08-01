@@ -104,6 +104,7 @@ async function createQueryFile(entityName: EntityCasing) {
       ],
     })
     .addImport({
+      isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudIndexQueryOptionsModelFile(entityName)),
       namedImports: [
         `${entityName.pascalCase}IndexQueryOptions`,

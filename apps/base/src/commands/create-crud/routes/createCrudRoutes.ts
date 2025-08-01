@@ -30,13 +30,13 @@ function getRoutePath({
       return ''
     }
     case 'detail': {
-      return `:${entityName}Uuid`
+      return `:${entityName.camelCase}Uuid`
     }
     case 'delete': {
-      return `:${entityName}Uuid/delete`
+      return `:${entityName.camelCase}Uuid/delete`
     }
     case 'update': {
-      return `:${entityName}Uuid/update`
+      return `:${entityName.camelCase}Uuid/update`
     }
     case 'create': {
       return `create`
@@ -128,7 +128,7 @@ async function addToRoutesIndex({
   routesSourceFile.addImportDeclaration({
     moduleSpecifier: `@/modules/${entityName.kebabCase}`,
     namedImports: [
-      `${entityName}Routes`,
+      `${entityName.camelCase}Routes`,
     ],
   })
 

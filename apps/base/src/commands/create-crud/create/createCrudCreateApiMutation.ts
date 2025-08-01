@@ -8,7 +8,6 @@ import { toFileAlias } from '#utils/files/toFileAlias.ts'
 import {
   getCreateCrudCreateApiMutationFile,
   getCreateCrudCreateFormModelFile,
-  getCreateCrudCreateTransformerFile,
 } from './createCrudCreate.files'
 
 interface CreateCrudCreateApiMutationOptions {
@@ -69,7 +68,16 @@ async function createMutationFile(entityName: EntityCasing) {
       isExported: true,
       name: `use${entityName.pascalCase}CreateMutation`,
       parameters: [],
-      statements: [],
+      statements: [
+        `return useMutation({
+        queryFn: async ({ body }: ${entityName.pascalCase}CreateMutationOptions) => {
+          return await ${entityName.pascalCase}Service.create(body)
+        },
+        queryKeysToInvalidate: {
+          ${entityName.kebabCase}Index: {},
+        },
+      })`,
+      ],
     })
     .save()
 }
@@ -86,7 +94,6 @@ async function addToServiceFile(entityName: EntityCasing) {
   })
   const createFormFile = getCreateCrudCreateFormModelFile(entityName)
   const uuidFile = getCreateCrudUuidModelFile(entityName)
-  const transformerFile = getCreateCrudCreateTransformerFile(entityName)
 
   fileManipulator
     .addImport({
@@ -94,12 +101,6 @@ async function addToServiceFile(entityName: EntityCasing) {
       moduleSpecifier: 'neverthrow',
       namedImports: [
         'Result',
-      ],
-    })
-    .addImport({
-      moduleSpecifier: 'neverthrow',
-      namedImports: [
-        'ResultAsync',
       ],
     })
     .addImport({
@@ -114,12 +115,6 @@ async function addToServiceFile(entityName: EntityCasing) {
       moduleSpecifier: toFileAlias(uuidFile),
       namedImports: [
         `${entityName.pascalCase}Uuid`,
-      ],
-    })
-    .addImport({
-      moduleSpecifier: toFileAlias(transformerFile),
-      namedImports: [
-        `${entityName.pascalCase}CreateTransformer`,
       ],
     })
     .addClass({
@@ -139,15 +134,7 @@ async function addToServiceFile(entityName: EntityCasing) {
         },
       ],
       returnType: `Promise<Result<${entityName.pascalCase}Uuid, Error>>`,
-      statements: [
-        `  
-            const dto = ${entityName.pascalCase}CreateTransformer.toDto(form)
-            const response = await ResultAsync.fromPromise(create${entityName.pascalCase}V1({
-              body: dto,
-            }), () => new Error('Failed to create ${entityName.humanReadable}'))
-            return response.map((res) => res.data.uuid as ${entityName.pascalCase}Uuid)
-        `,
-      ],
+      statements: [],
     })
     .save()
 }

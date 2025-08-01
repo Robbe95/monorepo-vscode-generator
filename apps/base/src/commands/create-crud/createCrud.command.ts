@@ -1,8 +1,8 @@
+import { getRunCommandAbstraction } from '#abstractions/runCommand.abstraction.ts'
 import { getConfig } from '#config/getConfig.ts'
 import { allCases } from '#utils/casing/caseTransformer.utils.ts'
 import { getInputSelect } from '#utils/input/getInputSelect.utils.ts'
 import { getInputString } from '#utils/input/getInputString.utils.ts'
-import { getLogger } from '#utils/logger/logger.utils.ts'
 
 import { createCrudCreate } from './create/createCrudCreate'
 import { createCrudDelete } from './delete/createCrudDelete'
@@ -15,9 +15,9 @@ import { createCrudUpdate } from './update/createCrudUpdate'
 import { createCrudUuid } from './uuid/createCrudUuid'
 
 export async function createCrudCommand() {
-  const logger = getLogger()
-
   await getConfig()
+
+  const runCommand = getRunCommandAbstraction()
 
   const entityName = allCases(await getInputString({
     title: 'Create new CRUD',
@@ -85,34 +85,30 @@ export async function createCrudCommand() {
   })
 
   if (crudSelection.includes('Index')) {
-    logger.info(`Generating Index for ${entityName}`)
     await createCrudIndex({
       entityName,
     })
   }
   if (crudSelection.includes('Detail')) {
-    logger.info(`Generating Detail for ${entityName}`)
     await createCrudDetail({
       entityName,
     })
   }
   if (crudSelection.includes('Create')) {
-    logger.info(`Generating Create for ${entityName}`)
     await createCrudCreate({
       entityName,
     })
   }
   if (crudSelection.includes('Update')) {
-    logger.info(`Generating Update for ${entityName}`)
     await createCrudUpdate({
       entityName,
     })
   }
   if (crudSelection.includes('Delete')) {
-    logger.info(`Generating Delete for ${entityName}`)
-    // Call the function to generate Delete
     await createCrudDelete({
       entityName,
     })
   }
+
+  await runCommand(`pnpm run lint`)
 }

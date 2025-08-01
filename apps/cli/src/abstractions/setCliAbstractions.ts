@@ -1,3 +1,4 @@
+import { exec } from 'node:child_process'
 import process from 'node:process'
 
 import {
@@ -11,6 +12,7 @@ import {
   setGetInputStringAbstraction,
   setGetRootFolderAbstraction,
   setLoggerExtraction,
+  setRunCommandAbstraction,
 } from '@repo/base'
 import type { InputStringOptions } from 'node_modules/@repo/base/src/utils/input/getInputString.utils.ts'
 
@@ -19,6 +21,7 @@ export function setCliAbstractions() {
   setGetInputStringAbstraction(cliGetInputString)
   setGetInputSelectAbstraction(cliGetInputSelect)
   setGetRootFolderAbstraction(cliGetRootFolder)
+  setRunCommandAbstraction(cliRunCommand)
 }
 
 function cliLogger() {
@@ -114,4 +117,21 @@ async function cliGetInputSelect<TMulti extends boolean>({
 
 function cliGetRootFolder(): string {
   return process.cwd()
+}
+
+function cliRunCommand(command: string): Promise<void> {
+  // run the command in the current working directory
+  return new Promise((resolve, reject) => {
+    exec(command, {
+      cwd: process.cwd(),
+    }, (error: Error | null) => {
+      if (error) {
+        console.error(`Error executing command: ${error.message}`)
+        reject(error)
+      }
+      else {
+        resolve()
+      }
+    })
+  })
 }
