@@ -69,16 +69,7 @@ async function createMutationFile(entityName: EntityCasing) {
       isExported: true,
       name: `use${entityName.pascalCase}CreateMutation`,
       parameters: [],
-      statements: [
-        `return useMutation({
-        queryFn: async ({ body }: ${entityName.pascalCase}CreateMutationOptions) => {
-          return await ${entityName.pascalCase}Service.create(body)
-        },
-        queryKeysToInvalidate: {
-          ${entityName.kebabCase}Index: {},
-        },
-      })`,
-      ],
+      statements: [],
     })
     .save()
 }

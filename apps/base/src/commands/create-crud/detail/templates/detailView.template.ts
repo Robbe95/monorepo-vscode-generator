@@ -49,7 +49,7 @@ import { VcRouterLinkButton } from '@wisemen/vue-core-components'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import AppPage from '@/components/layout/AppPage.vue'
+import PageLayout from '@/components/layout/PageLayout.vue'
 import { TEST_ID } from '@/constants/testId.constant'
 ${detailModelImport}
 
@@ -66,7 +66,7 @@ const isEditButtonVisible = computed<boolean>(() => {
 </script>
 
 <template>
-  <AppPage :title="i18n.t('module.${entityName.snakeCase}.unknown')">
+  <PageLayout :title="i18n.t('module.${entityName.snakeCase}.unknown')">
     <template #actions>
       <VcRouterLinkButton
         v-if="isEditButtonVisible"
@@ -105,7 +105,7 @@ const isEditButtonVisible = computed<boolean>(() => {
         </div>
       </div>
     </div>
-  </AppPage>
+  </PageLayout>
 </template>
 `
 }

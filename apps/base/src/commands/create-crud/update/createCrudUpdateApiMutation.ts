@@ -8,7 +8,6 @@ import { toFileAlias } from '#utils/files/toFileAlias.ts'
 import {
   getCreateCrudUpdateApiMutationFile,
   getCreateCrudUpdateFormModelFile,
-  getCreateCrudUpdateTransformerFile,
 } from './createCrudUpdate.files'
 
 interface CreateCrudUpdateApiMutationOptions {
@@ -54,12 +53,6 @@ async function createMutationFile(entityName: EntityCasing) {
       ],
     })
     .addImport({
-      moduleSpecifier: toFileAlias(getCreateCrudUpdateApiMutationFile(entityName)),
-      namedImports: [
-        `use${entityName.pascalCase}UpdateMutation`,
-      ],
-    })
-    .addImport({
       moduleSpecifier: toFileAlias(getCreateCrudServiceFile(entityName)),
       namedImports: [
         `${entityName.pascalCase}Service`,
@@ -71,7 +64,7 @@ async function createMutationFile(entityName: EntityCasing) {
         {
           name: 'params',
           type: `{ 
-            uuid: ${entityName.pascalCase}Uuid 
+            ${entityName.camelCase}Uuid: ${entityName.pascalCase}Uuid 
           }`,
         },
         {
@@ -127,12 +120,6 @@ async function addToServiceFile(entityName: EntityCasing) {
         `${entityName.pascalCase}Uuid`,
       ],
     })
-    .addImport({
-      moduleSpecifier: toFileAlias(getCreateCrudUpdateTransformerFile(entityName)),
-      namedImports: [
-        `${entityName.pascalCase}UpdateTransformer`,
-      ],
-    })
     .addClassMethod({
       isAsync: true,
       isStatic: true,
@@ -141,7 +128,7 @@ async function addToServiceFile(entityName: EntityCasing) {
       nameClass: `${entityName.pascalCase}Service`,
       parameters: [
         {
-          name: `${entityName}Uuid`,
+          name: `${entityName.camelCase}Uuid`,
           type: `${entityName.pascalCase}Uuid`,
         },
         {
@@ -149,7 +136,7 @@ async function addToServiceFile(entityName: EntityCasing) {
           type: `${entityName.pascalCase}UpdateForm`,
         },
       ],
-      returnType: `Promise<void>`,
+      returnType: `Promise<Result<${entityName.pascalCase}Detail, Error>>`,
       statements: [],
     })
     .save()

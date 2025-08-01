@@ -3,19 +3,19 @@ import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 export function getCreateCrudIndexModelFile(entityName: EntityCasing) {
   return {
     name: `${entityName.camelCase}Index.model.ts`,
-    path: `src/modules/${entityName.kebabCase}/models/index`,
+    path: `src/modules/${entityName.kebabCase}/models/${entityName.kebabCase}/index`,
   }
 }
 export function getCreateCrudIndexTransformerFile(entityName: EntityCasing) {
   return {
     name: `${entityName.camelCase}Index.transformer.ts`,
-    path: `src/modules/${entityName.kebabCase}/models/index`,
+    path: `src/modules/${entityName.kebabCase}/models/${entityName.kebabCase}/index`,
   }
 }
 export function getCreateCrudIndexQueryOptionsModelFile(entityName: EntityCasing) {
   return {
     name: `${entityName.camelCase}IndexQueryOptions.model.ts`,
-    path: `src/modules/${entityName.kebabCase}/models/index`,
+    path: `src/modules/${entityName.kebabCase}/models/${entityName.kebabCase}/index`,
   }
 }
 

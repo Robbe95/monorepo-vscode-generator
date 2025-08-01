@@ -65,7 +65,7 @@ async function addToServiceFile(entityName: EntityCasing) {
           type: `PaginationOptions<${entityName.pascalCase}IndexQueryOptions>`,
         },
       ],
-      returnType: `Promise<PaginatedData<${entityName.pascalCase}Index>>`,
+      returnType: `Promise<Result<PaginatedData<${entityName.pascalCase}Index>, Error>>`,
       statements: [],
     })
     .save()
@@ -94,7 +94,6 @@ async function createQueryFile(entityName: EntityCasing) {
       isTypeOnly: true,
       moduleSpecifier: '@wisemen/vue-core-components',
       namedImports: [
-        'PaginatedData',
         'PaginationOptions',
       ],
     })
@@ -102,12 +101,6 @@ async function createQueryFile(entityName: EntityCasing) {
       moduleSpecifier: '@wisemen/vue-core-query',
       namedImports: [
         'useQuery',
-      ],
-    })
-    .addImport({
-      moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
-      namedImports: [
-        `${entityName.pascalCase}Index`,
       ],
     })
     .addImport({

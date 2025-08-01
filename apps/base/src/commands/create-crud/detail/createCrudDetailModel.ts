@@ -28,7 +28,7 @@ export async function createCrudDetailModel({
       ],
     })
     .addStatement({
-      statement: `// TODO ${entityName}Detail is generated. Update it with your properties.`,
+      statement: `// TODO ${entityName.camelCase}Detail is generated. Update it with your properties.`,
     })
     .addInterface({
       isExported: true,

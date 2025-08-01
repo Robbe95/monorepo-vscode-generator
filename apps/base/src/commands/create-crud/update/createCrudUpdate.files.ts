@@ -3,14 +3,14 @@ import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
 export function getCreateCrudUpdateFormModelFile(entityName: EntityCasing) {
   return {
     name: `${entityName.camelCase}UpdateForm.model.ts`,
-    path: `src/models/${entityName.kebabCase}/update`,
+    path: `src/modules/${entityName.kebabCase}/models/${entityName.kebabCase}/update`,
   }
 }
 
 export function getCreateCrudUpdateTransformerFile(entityName: EntityCasing) {
   return {
     name: `${entityName.camelCase}Update.transformer.ts`,
-    path: `src/models/${entityName.kebabCase}/update`,
+    path: `src/modules/${entityName.kebabCase}/models/${entityName.kebabCase}/update`,
   }
 }
 

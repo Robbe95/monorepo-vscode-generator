@@ -1,4 +1,11 @@
+import { getCreateCrudDetailModelFile } from '#commands/create-crud/detail/createCrudDetail.files.ts'
+import {
+  getCreateCrudUpdateApiMutationFile,
+  getCreateCrudUpdateFormFile,
+  getCreateCrudUpdateTransformerFile,
+} from '#commands/create-crud/update/createCrudUpdate.files.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
@@ -17,6 +24,35 @@ export async function getUpdateFormTemplate(entityName: EntityCasing) {
     value: `${entityName.kebabCase}-update-form-submit-button`,
   })
 
+  const updateTransformerImport = toTsImport({
+    ...getCreateCrudUpdateTransformerFile(entityName),
+    methodNames: [
+      `${entityName.pascalCase}UpdateTransformer`,
+    ],
+  })
+
+  const detailModelImport = toTsImport({
+    ...getCreateCrudDetailModelFile(entityName),
+    isType: true,
+    methodNames: [
+      `${entityName.pascalCase}Detail`,
+    ],
+  })
+
+  const updateFormModelImport = toTsImport({
+    ...getCreateCrudUpdateFormFile(entityName),
+    methodNames: [
+      `${entityName.pascalCase}UpdateFormSchema`,
+    ],
+  })
+
+  const updateMutationFileImport = toTsImport({
+    ...getCreateCrudUpdateApiMutationFile(entityName),
+    methodNames: [
+      `use${entityName.pascalCase}UpdateMutation`,
+    ],
+  })
+
   return `
   <script setup lang="ts">
 import {
@@ -27,18 +63,17 @@ import { useForm } from 'formango'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import FormGrid from '@/components/app/grid/FormGrid.vue'
 import AppTeleport from '@/components/app/teleport/AppTeleport.vue'
-import AppForm from '@/components/form/AppForm.vue'
+import FormRoot from '@/components/form/FormRoot.vue'
 import FormFieldset from '@/components/form/FormFieldset.vue'
 import FormLayout from '@/components/form/FormLayout.vue'
 import FormSubmitButton from '@/components/form/FormSubmitButton.vue'
 import { useApiErrorToast } from '@/composables/api-error-toast/apiErrorToast.composable'
 import { TEST_ID } from '@/constants/testId.constant'
-import { ${entityName.pascalCase}UpdateTransformer } from '@/models/${entityName.kebabCase}/update/${entityName.camelCase}Update.transformer.ts'
-import type { ${entityName.pascalCase}Detail } from '@/models/${entityName.kebabCase}/detail/${entityName.camelCase}Detail.model'
-import { ${entityName.camelCase}UpdateFormSchema } from '@/models/${entityName.kebabCase}/update/${entityName.camelCase}UpdateForm.model'
-import { use${entityName.pascalCase}UpdateMutation } from '@/modules/${entityName.kebabCase}/api/mutations/${entityName.camelCase}Update.mutation'
+${updateTransformerImport}
+${detailModelImport}
+${updateFormModelImport}
+${updateMutationFileImport}
 import { toFormField } from '@/utils/formango.util'
 
 const props = defineProps<{
@@ -86,11 +121,9 @@ const uuid = form.register('uuid')
 </script>
 
 <template>
-  <AppForm :form="form">
-    <template #default="{ formId }">
+  <FormRoot :form="form">
       <AppTeleport to="headerActions">
         <FormSubmitButton
-          :form-id="formId"
           :form="form"
           :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON"
           :label="i18n.t('form.save_changes')"
@@ -109,8 +142,7 @@ const uuid = form.register('uuid')
           </FormGrid>
         </FormFieldset>
       </FormLayout>
-    </template>
-  </AppForm>
+  </FormRoot>
 </template>
 `
 }

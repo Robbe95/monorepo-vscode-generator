@@ -108,7 +108,7 @@ async function addToServiceFile(entityName: EntityCasing) {
           type: `${entityName.pascalCase}Uuid`,
         },
       ],
-      returnType: `Promise<void>`,
+      returnType: `Promise<Result<void, Error>>`,
       statements: [],
     })
     .save()

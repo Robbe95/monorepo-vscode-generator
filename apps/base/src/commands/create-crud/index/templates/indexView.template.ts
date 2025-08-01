@@ -1,4 +1,11 @@
+import {
+  getCreateCrudIndexApiQueryFile,
+  getCreateCrudIndexQueryOptionsModelFile,
+  getCreateCrudIndexViewTableFile,
+} from '#commands/create-crud/index/createCrudIndex.files.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
+import { toVueImport } from '#utils/files/toVueImport.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
@@ -19,6 +26,26 @@ export async function getIndexViewTemplate(entityName: EntityCasing): Promise<st
     value: `${entityName.kebabCase}-overview-create-button`,
   })
 
+  const indexQueryOptionsModelImport = toTsImport({
+    ...getCreateCrudIndexQueryOptionsModelFile(entityName),
+    isType: true,
+    methodNames: [
+      `${entityName.pascalCase}IndexQueryOptions`,
+    ],
+
+  })
+
+  const indexModelImport = toTsImport({
+    ...getCreateCrudIndexApiQueryFile(entityName),
+    methodNames: [
+      `${entityName.pascalCase}Index`,
+    ],
+  })
+
+  const tableImport = toVueImport({
+    ...getCreateCrudIndexViewTableFile(entityName),
+  })
+
   const template = `
   <script setup lang="ts">
 import {
@@ -32,16 +59,16 @@ import PaginationSearchField from '@/components/pagination/PaginationSearchField
 import TableErrorState from '@/components/table/TableErrorState.vue'
 import { useDocumentTitle } from '@/composables/document-title/documentTitle.composable'
 import { TEST_ID } from '@/constants/testId.constant.ts'
-import type { ${entityName.pascalCase}IndexPagination } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexPagination.model'
-import { use${entityName.pascalCase}IndexQuery } from '@/modules/${entityName.kebabCase}/api/queries/${entityName.camelCase}Index.query'
-import ${entityName.pascalCase}OverviewTable from '@/modules/${entityName.kebabCase}/features/overview/components/${entityName.pascalCase}OverviewTable.vue'
+${indexQueryOptionsModelImport}
+${indexModelImport}
+${tableImport}
 
 const i18n = useI18n()
 const documentTitle = useDocumentTitle()
 
 documentTitle.set(i18n.t('module.${entityName.snakeCase}.label.plural'))
 
-const pagination = usePagination<${entityName.pascalCase}IndexPagination>({
+const pagination = usePagination<${entityName.pascalCase}IndexQueryOptions>({
   isRouteQueryEnabled: true,
   key: '${entityName.camelCase}Index',
 })

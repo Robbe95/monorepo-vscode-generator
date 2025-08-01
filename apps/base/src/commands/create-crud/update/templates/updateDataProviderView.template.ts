@@ -1,14 +1,35 @@
+import { getCreateCrudDetailApiQueryFile } from '#commands/create-crud/detail/createCrudDetail.files.ts'
+import { getCreateCrudUpdateViewFile } from '#commands/create-crud/update/createCrudUpdate.files.ts'
+import { getCreateCrudUuidModelFile } from '#commands/create-crud/uuid/createCrudUuid.files.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
+import { toVueImport } from '#utils/files/toVueImport.ts'
 
 export function getUpdateDataProviderViewFile(entityName: EntityCasing) {
+  const uuidModelImport = toTsImport({
+    ...getCreateCrudUuidModelFile(entityName),
+    methodNames: [
+      `${entityName.pascalCase}Uuid`,
+    ],
+  })
+
+  const detailQueryImport = toTsImport({
+    ...getCreateCrudDetailApiQueryFile(entityName),
+    methodNames: [
+      `use${entityName.pascalCase}DetailQuery`,
+    ],
+  })
+
+  const detailUpdateImport = toVueImport(getCreateCrudUpdateViewFile(entityName))
+
   return `
     <script setup lang="ts">
     import { computed } from 'vue'
 
     import AppDataProviderView from '@/components/app/AppDataProviderView.vue'
-    import type { ${entityName.pascalCase}Uuid } from '@/models/${entityName.kebabCase}/${entityName.camelCase}Uuid.model'
-    import { use${entityName.pascalCase}DetailQuery } from '@/modules/${entityName.kebabCase}/api/queries/${entityName.camelCase}Detail.query'
-    import ${entityName.pascalCase}UpdateView from '@/modules/${entityName.kebabCase}/features/update/views/${entityName.pascalCase}UpdateView.vue'
+    ${uuidModelImport}
+    ${detailQueryImport}
+    ${detailUpdateImport}
 
     const props = defineProps<{
       ${entityName.camelCase}Uuid: ${entityName.pascalCase}Uuid

@@ -8,7 +8,6 @@ import { toFileAlias } from '#utils/files/toFileAlias.ts'
 import {
   getCreateCrudDetailApiQueryFile,
   getCreateCrudDetailModelFile,
-  getCreateCrudDetailTransformerFile,
 } from './createCrudDetail.files'
 
 export async function createCrudDetailApiQuery({
@@ -53,12 +52,6 @@ async function addToServiceFile(entityName: EntityCasing) {
         `${entityName.pascalCase}Uuid`,
       ],
     })
-    .addImport({
-      moduleSpecifier: toFileAlias(getCreateCrudDetailTransformerFile(entityName)),
-      namedImports: [
-        `${entityName.pascalCase}DetailTransformer`,
-      ],
-    })
     .addClassMethod({
       isAsync: true,
       isStatic: true,
@@ -71,7 +64,7 @@ async function addToServiceFile(entityName: EntityCasing) {
           type: `${entityName.pascalCase}Uuid`,
         },
       ],
-      returnType: `Promise<${entityName.pascalCase}Detail>`,
+      returnType: `Promise<Result<${entityName.pascalCase}Detail>, Error>`,
       statements: [],
     })
     .save()

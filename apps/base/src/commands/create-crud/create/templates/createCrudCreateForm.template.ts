@@ -122,25 +122,22 @@ const uuid = form.register('uuid')
 
 <template>
   <FormRoot :form="form">
-    <template #default="{ formId }">
-      <AppTeleport to="headerActions">
-        <FormSubmitButton
-          :form="form"
-          :form-id="formId"
-          :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON"
-          :label="i18n.t('shared.save')"
-        />
-      </AppTeleport>
+    <AppTeleport to="headerActions">
+      <FormSubmitButton
+        :form="form"
+        :data-test-id="TEST_ID.${toPlural(entityName.upperCase)}.FORM.SUBMIT_BUTTON"
+        :label="i18n.t('shared.save')"
+      />
+    </AppTeleport>
 
-      <FormLayout>
-        <FormFieldset :title="i18n.t('module.${entityName.snakeCase}.info')">
-          <VcTextField
-            v-bind="toFormField(uuid)"
-            :label="i18n.t('module.${entityName.snakeCase}.uuid')"
-          />
-        </FormFieldset>
-      </FormLayout>
-    </template>
+    <FormLayout>
+      <FormFieldset :title="i18n.t('module.${entityName.snakeCase}.info')">
+        <VcTextField
+          v-bind="toFormField(uuid)"
+          :label="i18n.t('module.${entityName.snakeCase}.uuid')"
+        />
+      </FormFieldset>
+    </FormLayout>
   </FormRoot>
 </template>
 

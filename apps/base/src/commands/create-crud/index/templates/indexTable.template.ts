@@ -1,4 +1,9 @@
+import {
+  getCreateCrudIndexModelFile,
+  getCreateCrudIndexQueryOptionsModelFile,
+} from '#commands/create-crud/index/createCrudIndex.files.ts'
 import type { EntityCasing } from '#utils/casing/caseTransformer.utils.ts'
+import { toTsImport } from '#utils/files/toTsImport.ts'
 import { toPlural } from '#utils/pluralize/pluralize.utils.ts'
 import { addTestId } from '#utils/test-id/addTestId.utils.ts'
 import { addTranslation } from '#utils/translation/addTranslation.utils.ts'
@@ -18,6 +23,22 @@ export async function getIndexTableTemplate(entityName: EntityCasing) {
     value: `${entityName.kebabCase}-overview-table-container`,
   })
 
+  const indexModelImport = toTsImport({
+    methodNames: [
+      `${entityName.pascalCase}Index`,
+    ],
+    ...getCreateCrudIndexModelFile(entityName),
+    isType: true,
+  })
+
+  const indexQueryOptionsModelImport = toTsImport({
+    methodNames: [
+      `${entityName.pascalCase}IndexQueryOptions`,
+    ],
+    ...getCreateCrudIndexQueryOptionsModelFile(entityName),
+    isType: true,
+  })
+
   const template = `
   <script setup lang="ts">
 import type {
@@ -35,8 +56,8 @@ import { useI18n } from 'vue-i18n'
 
 import AppErrorState from '@/components/app/error-state/AppErrorState.vue'
 import { TEST_ID } from '@/constants/testId.constant'
-import type { ${entityName.pascalCase}Index } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}Index.model'
-import type { ${entityName.pascalCase}IndexQueryOptions } from '@/models/${entityName.kebabCase}/index/${entityName.camelCase}IndexQueryOptions.model'
+${indexModelImport}
+${indexQueryOptionsModelImport}
 import ${entityName.pascalCase}OverviewTableNameCell from '@/modules/${entityName.kebabCase}/features/overview/components/${entityName.pascalCase}OverviewTableNameCell.vue'
 
 const props = defineProps<{

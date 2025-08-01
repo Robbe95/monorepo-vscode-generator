@@ -156,7 +156,7 @@ async function addToRoutesIndex({
   const existingRoute = routesArray
     .getElements()
     .find((element) => {
-      return element.getText() === `...${entityName}Routes`
+      return element.getText() === `...${entityName.camelCase}Routes`
     })
 
   if (existingRoute) {
@@ -164,7 +164,7 @@ async function addToRoutesIndex({
   }
 
   routesArray
-    .addElement(`...${entityName}Routes,`)
+    .addElement(`...${entityName.camelCase}Routes,`)
 
   routesSourceFile.saveSync()
 }
@@ -178,7 +178,7 @@ function addRoutesToModuleExport({
     entityName,
     moduleSpecifier: toFileAlias(routesFile),
     namedExports: [
-      `${entityName}Routes`,
+      `${entityName.camelCase}Routes`,
     ],
   })
 }

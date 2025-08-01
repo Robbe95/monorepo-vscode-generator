@@ -24,6 +24,7 @@ export async function createCrudIndexTransformer({
 
   fileManipulator
     .addImport({
+      isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudIndexModelFile(entityName)),
       namedImports: [
         `${entityName.pascalCase}Index`,

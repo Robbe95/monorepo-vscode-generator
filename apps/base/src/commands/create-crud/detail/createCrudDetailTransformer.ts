@@ -24,6 +24,7 @@ export async function createCrudDetailTransformer({
 
   fileManipulator
     .addImport({
+      isTypeOnly: true,
       moduleSpecifier: toFileAlias(getCreateCrudDetailModelFile(entityName)),
       namedImports: [
         `${entityName.pascalCase}Detail`,
